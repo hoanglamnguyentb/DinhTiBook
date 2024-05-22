@@ -1,0 +1,429 @@
+<script>
+import {
+  ref,
+  watch
+} from "vue";
+import Multiselect from "@vueform/multiselect";
+import "@vueform/multiselect/themes/default.css";
+
+import DropZone from "@/components/widgets/dropZone";
+import useVuelidate from "@vuelidate/core";
+import { 
+  required, 
+  helpers,
+} from '@vuelidate/validators'
+
+import flatPickr from "vue-flatpickr-component";
+import "flatpickr/dist/flatpickr.css";
+import Layout from "../../../layouts/main.vue";
+import appConfig from "../../../../app.config";
+import PageHeader from "@/components/page-header";
+
+
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
+
+import FileManager from "@/components/FileManager"
+import APIService from "@/helpers/ApiService"
+
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
+import Common from "@/helpers/Common"
+
+export default {
+  page: {
+    title: "Chỉnh sửa tin tức",
+    meta: [{
+      name: "Chỉnh sửa tin tức",
+      content: appConfig.description,
+    },],
+  },
+  setup() {
+    let files = ref([]);
+    let dropzoneFile = ref("");
+    const drop = (e) => {
+      dropzoneFile.value = e.dataTransfer.files[0];
+      files.value.push(dropzoneFile.value);
+    };
+    const selectedFile = () => {
+      dropzoneFile.value = document.querySelector(".dropzoneFile").files[0];
+      files.value.push(dropzoneFile.value);
+    };
+    watch(
+      () => [...files.value],
+      (currentValue) => {
+        return currentValue;
+      }
+    );
+    return {
+      dropzoneFile,
+      drop,
+      selectedFile,
+      v$: useVuelidate(),
+      files
+    };
+  },
+  data() {
+    return {
+      title: "Chỉnh sửa tin tức",
+      items: [{
+        text: "Tin tức",
+        href: "/tin-tuc",
+      },
+      {
+        text: "Chỉnh sửa tin tức",
+        active: true,
+      },
+      ],
+      datetimeConfig: {
+        //enableTime: false,
+        dateFormat: "d/m/Y",
+        //time_24hr: true,
+      },
+      editorOptions: {
+        modules: {
+          toolbar: {
+            container: [
+              ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+              ['blockquote', 'code-block'],
+
+              [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+              [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+              [{ 'script': 'sub' }, { 'script': 'super' }],     // superscript/subscript
+              [{ 'indent': '-1' }, { 'indent': '+1' }],         // outdent/indent
+              [{ 'direction': 'rtl' }],                         // text direction
+
+              [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+              [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+
+              [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+              [{ 'font': [] }],
+              [{ 'align': [] }],
+              ['link', 'fileManager','image'],
+              ['clean']                                         // remove formatting button
+            ],
+            handlers: {
+              'fileManager': function(e) {
+                console.log(e)
+              }
+            },
+          }
+        },
+        placeholder: 'Nhập nội dung bài viết...',
+        theme: 'snow'
+      },
+      post:{
+        title : "",
+        danhMuc : 0,
+        trangThai : "",
+        content : "",
+        publicDate : "",
+        description: ""
+      },
+      idDanhMuc: "DM_TINTUC",
+      submitted : false,
+      showFileManager: false,
+      errMessage: null,
+      chuyenmuc:[],
+      lstChuyenMuc:[],
+    };
+  },
+  components: {
+    DropZone,
+    Layout,
+    PageHeader,
+    Multiselect,
+    flatPickr,
+    QuillEditor,
+    FileManager
+  },
+  async created(){
+    await this.GetById(),
+    await this.getChuyenMuc()
+  },
+  methods: {
+    deleteRecord(ele) {
+      ele.target.parentElement.parentElement.parentElement.remove();
+    },
+
+    async GetById(){
+      try {
+        var paramId = this.$route.params.id;
+        console.log('id', paramId)
+        var dataPost = await APIService.get("tintuc/" + paramId);
+        var res = dataPost.data;
+        
+        if(res != null && res.data != null){
+          this.post = res.data
+          console.log('aaa', this.post)
+        }else{
+          toast.error("Không tìm thấy thông tin bài viết.",{
+            "theme": "colored",
+            autoClose: 2000
+          });
+        }
+      } catch (e) {
+        if(e.status == 401){
+          toast.error("Bạn không có quyền truy cập.",{
+            "theme": "colored",
+            autoClose: 2000
+          });
+        }else {
+          if(e.data && e.data.Message){
+            this.errMessage = e.data.Message;
+            toast.error(e.data.Message,{
+              "theme": "colored",
+              autoClose: 2000
+            });
+          }else{
+            toast.error("Không tìm thấy thông tin bài viết.",{
+              "theme": "colored",
+              autoClose: 2000
+            });
+          }
+        }
+      }
+    },
+    async getChuyenMuc(){
+      var result = await APIService.get(`/ThongTinDanhMuc/GetDataByPage?MaDanhMuc=` + this.idDanhMuc);
+      this.chuyenmuc = result.data.data.items;
+      
+      for(var i=0; i<this.chuyenmuc.length; i++){
+        var chuyenmucItem ={
+          value: this.chuyenmuc[i].giaTri,
+          label: this.chuyenmuc[i].giaTri
+        };
+        this.lstChuyenMuc.push(chuyenmucItem);
+      }
+    },       
+
+    async onSubmit(){
+      this.submitted = true
+      this.v$.$touch();
+      try {
+        await APIService.put("tintuc/edit/" + this.post.id, this.post);
+        toast.success("Chỉnh sửa bài viết thành công.", {
+          "theme": "colored",
+          autoClose: 2000
+        });
+
+      } catch (e) {
+        this.submitted = false;
+        if(e.status == 401){
+          toast.error("Bạn không có quyền truy cập.",{
+            "theme": "colored",
+            autoClose: 2000
+          });
+        }else {
+          if(e.data && e.data.Message){
+            this.errMessage = e.data.Message;
+            toast.error(e.data.Message,{
+              "theme": "colored",
+              autoClose: 2000
+            });
+          }else{
+            toast.error("Chỉnh sửa bài viết thất bại. Vui lòng thử lại sau.",{
+              "theme": "colored",
+              autoClose: 2000
+            });
+          }
+        }
+      }
+    }
+  },
+  validations () {
+    return {
+      post:{
+        title: {
+          required: helpers.withMessage("Tiêu đề bài viết không được để trống", required),
+        },
+        loai: {
+          required: helpers.withMessage("Vui lòng chọn danh mục bài viết", required),
+        },
+        content: {
+          required: helpers.withMessage("Vui lòng nhập nội dung bài viết", required),
+        },
+        isPublic: {
+          required: helpers.withMessage("Vui lòng chọn trạng thái bài viết", required),
+        },
+      }
+    }
+  }
+};
+</script>
+<style>
+.ql-container{
+  min-height: 300px;
+}
+</style>
+<template>
+
+    <PageHeader :title="title" :items="items" />
+    
+    <a-form>
+    <a-row :gutter="20">
+      <a-col :span="16">
+        <a-card>
+          <template #title>
+            <h5 class="custom-card-title mb-0">Thông tin bài viết</h5>
+          </template>
+          <div>
+
+            <a-form-item>
+              <label for="ChuyenMuc">Chuyên mục tin tức:</label>
+                <a-select
+                  v-model:value="post.chuyenMuc"
+                  show-search
+                  placeholder="Select a person"
+                  style="width: 100%"
+                  :options="lstChuyenMuc"
+                  :filter-option="filterOption"
+                  size="large"
+                ></a-select>
+            
+            </a-form-item>
+            <a-form-item>
+              <label for="TieuDe">Tiêu đề:</label>
+              <a-input name="TieuDe" size="large" id="TieuDe" v-model:value="post.title" />
+            </a-form-item>
+            <a-form-item label="Nổi bật">
+            
+              <a-checkbox v-model:checked="post.noiBat" @change="handleCheckboxChange"></a-checkbox>
+            </a-form-item>
+            <a-form-item>
+              <label for="NoiDung">Nội dung bài viết:</label>
+              <QuillEditor
+                theme="snow"
+                :options="editorOptions"
+                v-model:content="post.content"
+                contentType="html"
+                @change="quill"
+              />
+            </a-form-item>
+            <a-form-item>
+              <label for="MoTa">Mô tả bài biết:</label>
+              <a-textarea
+                v-model:value="post.description"
+                placeholder="Nhập mô tả bài viết"
+                allow-clear
+                :rows="5"
+              />
+            </a-form-item>
+            <a-form-item label="Ảnh đại diện">
+              <FileManager
+                :active="showFileManager"
+                :showButton="true"
+                :showPreview="true"
+                :closable="false"
+                :maxCount="1"
+                :multiple="false"
+                :accept="acceptType"
+                @select-file="handleSelectFile"
+              />
+            </a-form-item>
+            <a-form-item label="Tải file đính kèm">
+              <FileManager
+                :active="showFileManager"
+                :showButton="true"
+                :showPreview="true"
+                :closable="false"
+                :maxCount="1"
+                :multiple="false"
+                :accept="acceptType"
+                @select-file="handleSelectFile_DinhKem"
+              />
+            </a-form-item>
+          </div>
+        </a-card>
+      </a-col>
+
+      <a-col :span="8">
+        <a-card>
+          <template #title>
+            <h5 class="custom-card-title mb-0">Thông tin công khai</h5>
+          </template>
+
+          <div>
+            <a-form-item>
+              <label for="TieuDe">Danh mục:</label>
+              <a-select
+                
+                v-model:value="post.danhMuc"
+                placeholder="Chọn trạng thái"
+                size="large"
+                :options="[
+                { value: 'THONG_BAO', label: 'Thông báo' },
+                { value: 'TIN_TUC', label: 'Tin tức' },
+                
+              ]"
+              >
+              </a-select>
+            </a-form-item>
+            <a-form-item>
+              <label for="TieuDe">Trạng thái:</label>
+              <a-select
+                
+                v-model:value="post.trangThai"
+                placeholder="Chọn trạng thái"
+                size="large"
+                :options="[
+                { value: 'BAN_NHAP', label: 'Bản nháp' },
+                { value: 'XUAT_BAN', label: 'Xuất bản' },
+                { value: 'GO_BO', label: 'Gỡ bỏ' },
+              ]"
+              >
+              </a-select>
+            </a-form-item>
+            <div>
+              <label for="">Ngày phát hành:</label>
+              <flat-pickr v-model="post.publicDate" :config="datetimeConfig" placeholder="Chọn ngày phát hành" class="form-control"></flat-pickr>
+            </div>
+            <a-form-item>
+              <label for="">Hẹn ngày đăng:</label>
+              <flat-pickr v-model="post.henGioDang" :config="datetimeConfig" placeholder="Chọn ngày đăng" class="form-control"></flat-pickr>
+              <!-- <a-date-picker v-model:value="post.henGioDang" /> -->
+            </a-form-item>
+          </div>
+        </a-card>
+        <a-card style="margin-top: 20px;">
+          <template #title>
+          <h5 class="custom-card-title mb-0">Thông tin Meta</h5>
+          </template>
+          <div>
+            <a-row :gutter="15">
+                <a-col :span="12">
+                    <a-form-item>
+                        <label for="">Tiêu đề Meta:</label>
+                        <a-input size="large" id="aaaa"/>
+                    </a-form-item>
+                </a-col>
+                <a-col :span="12">
+                    <a-form-item>
+                        <label for="">Từ khóa tìm kiếm:</label>
+                        <a-input size="large" id="eee" />
+                    </a-form-item>
+                </a-col>
+            </a-row>
+            <a-form-item>
+              <label for="">Mô tả:</label>
+              <a-textarea
+             
+                placeholder="Nhập mô tả bài viết"
+                allow-clear
+                :rows="5"
+              />
+            </a-form-item>
+          </div>
+        </a-card>
+      </a-col>
+    </a-row>
+  </a-form>
+  <a-row style="margin: 50px 0px">
+    <a-col :span="24">
+      <a-flex justify="center">
+        <a-button @click="onSubmit" size="large" type="success">Hoàn thành</a-button>
+      </a-flex>
+    </a-col>
+  </a-row>
+
+</template>

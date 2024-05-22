@@ -1,0 +1,363 @@
+<template>
+  <div style="margin-top: 70px">
+    <div class="container">
+      <div class="main-info">
+        <a-row>
+          <a-col :span="16" class="left">
+            <a-form
+              :model="ThongTinKH"
+              name="basic"
+              ref="formRef"
+              :rules="rules"
+            >
+              <p>Thông tin giao hàng</p>
+              <div class="box">
+                <a-row :gutter="[24]">
+                  <a-col :span="12">
+                    <a-form-item>
+                      <a-input
+                        v-model:value="ThongTinKH.TenKhachHang"
+                        placeholder="input placeholder"
+                      />
+                    </a-form-item>
+                  </a-col>
+                  <a-col :span="12">
+                    <a-form-item>
+                      <a-input
+                        v-model:value="ThongTinKH.SoDienThoai"
+                        placeholder="Số điện thoại"
+                      />
+                    </a-form-item>
+                  </a-col>
+                </a-row>
+                <!-- <a-row :gutter="[20]">
+                <a-col :span="8">
+                  <a-form-item >
+                    <a-select v-model:value="ThongTinKH.name" placeholder="Tỉnh/Thành phố">
+                      <a-select-option value="shanghai">Zone one</a-select-option>
+                      <a-select-option value="beijing">Zone two</a-select-option>
+                    </a-select>
+                  </a-form-item>
+                </a-col>
+                <a-col :span="8">
+                  <a-form-item >
+                    <a-select v-model:value="ThongTinKH.name" placeholder="Quận/Huyện">
+                      <a-select-option value="shanghai">Zone one</a-select-option>
+                      <a-select-option value="beijing">Zone two</a-select-option>
+                    </a-select>
+                  </a-form-item>
+                </a-col>
+                <a-col :span="8">
+                  <a-form-item >
+                    <a-select  placeholder="please select your zone">
+                      <a-select-option value="shanghai">Zone one</a-select-option>
+                      <a-select-option value="beijing">Zone two</a-select-option>
+                    </a-select>
+                  </a-form-item>
+                </a-col>
+              </a-row> -->
+                <a-form-item>
+                  <a-input v-model:value="ThongTinKH.Tinh" placeholder="Tỉnh" />
+                </a-form-item>
+                <a-form-item>
+                  <a-input
+                    v-model:value="ThongTinKH.Huyen"
+                    placeholder="Huyện"
+                  />
+                </a-form-item>
+                <a-form-item>
+                  <a-input v-model:value="ThongTinKH.Xa" placeholder="Xã" />
+                </a-form-item>
+                <a-form-item>
+                  <a-textarea
+                    :rows="5"
+                    v-model:value="ThongTinKH.DiaChi"
+                    placeholder="Dia chi cu the"
+                  />
+                </a-form-item>
+                <a-form-item>
+                  <a-textarea
+                    :rows="5"
+                    v-model:value="ThongTinKH.GhiChu"
+                    placeholder="Ghi chu"
+                  />
+                </a-form-item>
+              </div>
+              <div class="btn-submit">
+                <a-button @click="handleOk" size="large" type="success"
+                  >Hoàn thành</a-button
+                >
+              </div>
+            </a-form>
+          </a-col>
+          <a-col :span="8">
+            <div class="order">
+              <p class="outer-title">
+                <span class="title">Đơn hàng </span>
+                <span class="tt-bs"
+                  >( {{ $store.state.cart.length }} sản phẩm )</span
+                >
+              </p>
+              <div class="list-in-order">
+                <div
+                  v-for="item in $store.state.cart"
+                  :key="item.id"
+                  class="item"
+                >
+                  <div class="left">
+                    <img :src="URL + item.pathAnh" alt="">
+                  </div>
+                  <div class="mid">
+                    <p class="name">{{ item.tenSach }}</p>
+                    <p class="price">
+                      <span class="price_new">{{ item.giaTien }}</span>
+                      <span class="normal">{{ item.giaTien }}</span>
+                    </p>
+                    <p class="quantity">
+                      x {{ item.quantity }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="discount">
+                            <p class="title">Mã giảm giá</p>
+
+                            <div class="c-box_promotion">
+                                <input type="text" class="c-input_promotion" id="discount_code" value="" placeholder="Nhập mã giảm giá...">
+                                <a class="c-btn c-btn_promotion" href="javascript:void(0)" onclick="validApplyDiscount();" title="Gửi">
+                                    Áp dụng                                </a>
+                                
+                            </div>
+
+                        </div>
+                        <p class="discount_value"><span>Giảm giá</span><span class="discount_money"></span></p>
+                        <p class="total  fix">
+                            <span>Tổng cộng</span><span class="right total_temporary">{{ $store.state.cartTotal}}</span>
+                        </p>
+
+            </div>
+          </a-col>
+        </a-row>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import APIService from "@/helpers/ApiService";
+export default {
+  data() {
+    return {
+      URL: "http://localhost:44301/",
+      ThongTinKH: {},
+      
+    };
+  },
+  methods: {
+    getUserId(){
+      const userClientString = localStorage.getItem('userClient');
+      if (userClientString) {
+        try {
+          const userClient = JSON.parse(userClientString);
+          const userId = userClient.userId;
+          this.ThongTinKH.UserId = userId;
+          console.log('User ID:', this.ThongTinKH.UserId);
+        } catch (error) {
+          console.error('Error parsing userClient:', error);
+        }
+      } else {
+        console.log('No userClient found in localStorage');
+      }
+    },
+    handleOk() {
+      const Order ={
+        idUser : this.ThongTinKH.UserId,
+        tenKhachHang: this.ThongTinKH.TenKhachHang,
+        soDienThoai: this.ThongTinKH.SoDienThoai,
+        diaChi: this.ThongTinKH.DiaChi,
+        tinh: this.ThongTinKH.Tinh,
+        huyen: this.ThongTinKH.Huyen,
+        xa: this.ThongTinKH.Xa,
+        trangThaiDonHang: 1
+      }
+      // APIService.post("NhaXuatBan/Create",this.nxb)
+      APIService.post("/Order/Create", Order)
+      .then(response =>{
+        console.log('orderData',response.data);
+        // Lấy orderId từ response và lưu vào trường dữ liệu
+        var orderId = response.data.data.id;
+        console.log('order', orderId);
+        console.log('gio hang', this.$store.state.cart)
+        this.OrderDetail(orderId);
+      })
+      .catch(error => {
+        console.log('orderloi',error);
+      })
+      
+    },
+    OrderDetail(orderId){
+      console.log('ki', orderId)
+      this.$store.state.cart.forEach(product => {
+        const orderDetail = {
+          orderId: orderId,
+          idSanPham: product.id,  
+          giaTien: product.giaTien,
+          soLuong: product.quantity
+        };
+        APIService.post("/OrderDetail/Create", orderDetail)
+        .then(response =>{
+          console.log('orderDetailData',response.data);
+          // Lấy orderId từ response và lưu vào trường dữ liệu
+          
+        })
+        .catch(error => {
+          console.log('orderdetailloi',error);
+        })
+      })
+    }
+  },
+  mounted(){
+    this.getUserId();
+  }
+};
+</script>
+
+<style>
+.left {
+  position: relative;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 20px 20px 24px;
+}
+.btn-submit {
+  text-align: center;
+  margin-top: 36px;
+}
+.btn-submit a {
+  background: #e9262a;
+  padding: 15px 27px;
+  color: #fff;
+  text-transform: uppercase;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 700;
+}
+ .order {
+    padding: 18px 20px 22px 20px;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+}
+.order .outer-title {
+    font-size: 18px;
+    font-weight: 700;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+.order .list-in-order .item {
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    grid-gap: 20px;
+    margin-bottom: 20px;
+    position: relative;
+}
+.order .list-in-order .item .left {
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    border: 1px solid #eee;
+}
+.order .list-in-order .item .left img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.order .list-in-order .item .mid .name {
+    font-size: 15px;
+    line-height: 18px;
+    font-weight: 700;
+    color: #252525;
+}
+.order .list-in-order .item .mid .price {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    color: #e9262a;
+    font-size: 16px;
+    font-weight: 700;
+}
+.order .list-in-order .item .mid .price .normal {
+    text-decoration: line-through;
+    color: #252525;
+    font-weight: 400;
+    margin-left: 10px;
+}
+.order .discount {
+    padding: 20px 20px 25px 20px;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+}
+.order .discount .title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 22px;
+    color: #252525;
+}
+.order .discount .c-box_promotion {
+    display: flex;
+    width: 100%;
+}
+.order .ship-fee {
+    padding-top: 22px;
+    padding-bottom: 23px;
+}
+.order .fix {
+    background-color: #eee;
+    margin: 0;
+}
+.order .fix span {
+    margin-left: 20px;
+}
+.order .fix .right {
+    float: right;
+    margin-right: 20px;
+}
+.order .temporary {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+.order .fix span {
+    margin-left: 20px;
+}
+.order .fix .right {
+    float: right;
+    margin-right: 20px;
+}
+.order .discount_value {
+    padding-top: 22px;
+    padding-bottom: 23px;
+}
+.order .discount_value span {
+    margin-left: 20px;
+}
+.order .discount_value .discount_money {
+    float: right;
+    margin-right: 20px;
+}
+.order .total {
+    background-color: #fff;
+}
+.order .total span {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    font-weight: 700;
+}
+ .order .total .right {
+    color: #e9262a;
+    margin: 0;
+}
+main .main-info .order .fix .right {
+    float: right;
+
+}
+</style>
