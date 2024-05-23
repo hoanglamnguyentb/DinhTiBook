@@ -4,7 +4,7 @@
       <div class="header-top">
         <a-row>
           <a-col :span="10">
-            <a href="/TrangChu">
+            <a href="/">
               <img width="190px" src="@/assets/images/logoheader.png" />
             </a>
           </a-col>
@@ -121,13 +121,13 @@
                 ></a-button>
               </a-badge>
             </div>
-            <div style="margin-left: 15px" class="search">
+            <div style="margin-left: 15px" class="search position-relative">
               <a-button @click="openSearch" type="dashed" shape="circle"
                 ><i style="font-size: 18px" class="ri-search-line"></i
               ></a-button>
               <form
                 v-if="isSearchOpen"
-                class="frmSearch position-relative"
+                class="frmSearch position-absolute shadow"
                 @submit.prevent="onSubmit"
                 id="frmSearch"
               >
@@ -412,11 +412,11 @@ export default {
   /* display: none; */
   position: absolute;
   right: 0;
-  top: 36px;
+  top: 100%;
   width: 350px;
   z-index: 99;
   background: #fff;
-  box-shadow: 1px 1px 2px 2px #e5e5e5;
+  border-radius: 5px;
 }
 .form-control {
   display: block;
@@ -427,7 +427,7 @@ export default {
   color: #495057;
   background-color: #fff;
   background-clip: padding-box;
-  border: 1px solid #ced4da;
+  /* border: 1px solid #ced4da; */
   border-radius: 0.25rem;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
@@ -439,7 +439,7 @@ export default {
   width: 35px;
   background: #e9262a;
   border: 1px solid #fff;
-  border-radius: 5px;
+  border-radius: 0 5px 5px 0;
   outline: none;
 }
 </style>

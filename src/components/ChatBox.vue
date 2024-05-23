@@ -1,8 +1,4 @@
 <template>
-  <div id="center-text">
-    <h2>ChatBox UI</h2>
-    <p>Message send and scroll to bottom enabled</p>
-  </div>
   <div id="body">
     <div
       id="chat-circle"
@@ -73,6 +69,7 @@
             v-model="message"
             placeholder="Send a message..."
             ref="chatInput"
+            autocomplete="off"
           />
           <button type="submit" class="chat-submit" id="chat-submit">
             <i class="bi bi-send fs-5"></i>
@@ -123,35 +120,28 @@ export default {
       this.chatLogs.push({ type: 'self', message: userMessage });
       this.message = '';
       try {
-        // const response = await axios.post(
-        //   `https://api.docsbot.ai/teams/ZrbLG98bbxZ9EFqiPvyl/bots/oFFiXuQsakcqyEdpLvCB/ask`,
-        //   {
-        //     question: userMessage,
-        //     full_source: false,
-        //   },
-        //   {
-        //     headers: {
-        //       'Content-Type': 'application/json',
-        //     },
-        //   }
-        // );
-        const response = await axios.post('https://api.coze.com/open_api/v2/chat', {
-          
-          bot_id: '7371838891596595217',  // Thay bằng ID thực của bot
-          user: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJqdGkiOiJlMDQ4ZTM4Mi1hNzJkLTQ1ZGYtYjFlYy00ZTlmMDE0ZWI0YzkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiIwYmI0ZjUwZi1hMWNlLTRhMDgtNGNhZC0wOGRjNmRkYTZkZmYiLCJleHAiOjE3MTY0Mzc2MTUsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NDQzMDEvIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo0NDMwMS8ifQ.CJmPKvCkwgnPvGFn2xMdck2WEGeIAEq5hpyGq8m2F00',
-          query: "hello",  // Lấy giá trị từ message
-          stream: false
-        }, {
-          headers: {
-            'Authorization': 'pat_SBfelSjRBVO8v0Qp8p9OedtkzunLLlUsLjqaxQmgn2ixklRyO7i1wg4PX8RrhugM',  // Thay bằng mã thông báo truy cập thực
-            'Content-Type': 'application/json',
-            'Accept': '*/*',
-            'Host': 'api.coze.com',
-            'Connection': 'keep-alive'
+        const response = await axios.post(
+          // `https://api.docsbot.ai/teams/ZrbLG98bbxZ9EFqiPvyl/bots/oFFiXuQsakcqyEdpLvCB/ask`,
+          `https://api.coze.com/open_api/v2/chat`,
+          {
+            // conversation_id: '123',
+            bot_id: '7372188571547156498',
+            user: '29032201862555',
+            query: userMessage,
+            stream: false,
+          },
+          {
+            headers: {
+              Authorization:
+                'Bearer pat_Z95YU1MIDAml2Ln3PVvrQMDFyDicNI9tgxvn7OhgT5eaq4fzMYR5MZjp3qJDNeMB',
+              'Content-Type': 'application/json',
+              Accept: '*/*',
+              Host: 'api.coze.com',
+              Connection: 'keep-alive',
+            },
           }
-        });
-        console.log('ket qua',response)
-        const botMessage = 'response.messages.content';
+        );
+        const botMessage = response.data.messages[0].content;
         this.chatLogs.push({ type: 'user', message: botMessage });
         this.isLoading = false;
         localStorage.setItem('chatLogs', JSON.stringify(this.chatLogs));

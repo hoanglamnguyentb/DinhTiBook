@@ -20,9 +20,11 @@
               <p class="price">
                 Giá:
                 <span class="price_new">{{
-                  item.giaTien - (item.giaTien / 100) * item.giamGia
+                  formatCurrency(
+                    item.giaTien - (item.giaTien / 100) * item.giamGia
+                  )
                 }}</span>
-                <span class="normal">{{ item.giaTien }}</span>
+                <span class="normal">{{ formatCurrency(item.giaTien) }}</span>
               </p>
               <span class="discount"> -{{ item.giamGia }}% </span>
 
@@ -48,6 +50,7 @@ import Pagination from '@/components/widgets/Pagination.vue';
 import Header from '@/components/Header';
 import FooterClient from '@/components/FooterClient.vue';
 import APIService from '@/helpers/ApiService';
+import Common from '@/helpers/Common';
 export default {
   components: {
     Header,
@@ -92,6 +95,9 @@ export default {
         this.optionPage.pageSize = res.pageSize;
         this.optionPage.totalCount = res.totalCount;
       }
+    },
+    formatCurrency(x) {
+      return Common.formatCurrency(x);
     },
   },
   // mounted() {
@@ -197,8 +203,7 @@ export default {
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   grid-column-gap: 20px;
   grid-row-gap: 30px;
-  border-bottom: 1px solid #dddddd;
-  padding-bottom: 25px;
+  padding-bottom: 20px;
 }
 .bottom .grid .item {
   position: relative;
@@ -261,5 +266,8 @@ export default {
   cursor: pointer;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   transform: translate3d(0, -2px, 0);
+}
+.text-danger {
+  color: #e9262a !important;
 }
 </style>
