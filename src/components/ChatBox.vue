@@ -1,8 +1,4 @@
 <template>
-  <div id="center-text">
-    <h2>ChatBox UI</h2>
-    <p>Message send and scroll to bottom enabled</p>
-  </div>
   <div id="body">
     <div
       id="chat-circle"
@@ -73,6 +69,7 @@
             v-model="message"
             placeholder="Send a message..."
             ref="chatInput"
+            autocomplete="off"
           />
           <button type="submit" class="chat-submit" id="chat-submit">
             <i class="bi bi-send fs-5"></i>

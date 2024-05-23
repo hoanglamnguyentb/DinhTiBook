@@ -1,6 +1,8 @@
 <template>
   <div id="main">
-    <div class="container">
+    <div
+      class="container vh-100 d-flex align-items-center justify-content-center"
+    >
       <div class="form-login">
         <div class="left">
           <div class="top-left">
@@ -137,13 +139,15 @@
           </div>
         </div>
         <div class="right">
-          <p class="title-login">Quyền lợi và chính sách dành cho Đại lý</p>
+          <p class="title-login ps-5 fw-bold text-center">
+            Quyền lợi và chính sách dành cho Đại lý
+          </p>
           <hr />
-          <p class="summary">
+          <p class="summary text-center">
             Bạn muốn kinh doanh sách của Đinh Tị Books, chúng tôi sẽ đồng hành
             với bạn.
           </p>
-          <p class="icon-text">
+          <p class="icon-text text-center">
             <svg
               width="15"
               height="15"
@@ -163,7 +167,7 @@
 
             Sách dễ bán nhất
           </p>
-          <p class="icon-text">
+          <p class="icon-text text-center">
             <svg
               width="15"
               height="15"
@@ -183,7 +187,7 @@
 
             Lợi nhuận cao nhất
           </p>
-          <p class="icon-text">
+          <p class="icon-text text-center">
             <svg
               width="15"
               height="15"
@@ -203,12 +207,14 @@
 
             Phục vụ nhanh nhất
           </p>
-          <p class="last-text">
+          <p class="last-text text-center">
             Chúng tôi nỗ lực hết mình mang lại những sản phẩm tốt nhất cho cộng
             đồng. Hãy đồng hành với chúng tôi nhằm lan tỏa văn hóa đọc và nâng
             tầm trí tuệ Việt Nam.
           </p>
-          <a href="gioi-thieu-dang-ky-moi.html">Tìm hiểu và đăng ký</a>
+          <div class="text-center">
+            <a href="gioi-thieu-dang-ky-moi.html">Tìm hiểu và đăng ký</a>
+          </div>
           <div class="img-right">
             <img src="../../assets/banner/banner-dangnhap.png" alt="" />
           </div>
@@ -219,36 +225,36 @@
 </template>
 
 <script>
-import APIService from "@/helpers/ApiService";
-import router from "@/router/index";
-import * as jose from "jose";
+import APIService from '@/helpers/ApiService';
+import router from '@/router/index';
+import * as jose from 'jose';
 export default {
   data() {
     return {
       authError: null,
-      TaiKhoan: "",
-      MatKhau: "",
+      TaiKhoan: '',
+      MatKhau: '',
     };
   },
   methods: {
     async Login() {
       try {
         if (!this.TaiKhoan || !this.TaiKhoan) {
-          alert("Vui lòng điền đầy đủ thông tin.");
+          alert('Vui lòng điền đầy đủ thông tin.');
           return;
         }
 
-        let dataLogin = await APIService.post("user/login", {
+        let dataLogin = await APIService.post('user/login', {
           username: this.TaiKhoan,
           password: this.MatKhau,
         });
 
         if (dataLogin.data != null && dataLogin.data.accessToken) {
           localStorage.setItem(
-            "userClient",
+            'userClient',
             JSON.stringify(dataLogin.data.userData)
           );
-          localStorage.setItem("accessTokenClient", dataLogin.data.accessToken);
+          localStorage.setItem('accessTokenClient', dataLogin.data.accessToken);
 
           var token = dataLogin.data.accessToken;
 
@@ -256,22 +262,22 @@ export default {
 
           const Role =
             protectedHeader[
-              "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+              'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
             ];
 
-          await APIService.get("/AppRole/get/" + Role).then((response) => {
-            console.log("rolecode", response.data.data.roleCode);
+          await APIService.get('/AppRole/get/' + Role).then((response) => {
+            console.log('rolecode', response.data.data.roleCode);
             const roleCode = response.data.data.roleCode;
-            if (roleCode === "CLIENT") {
+            if (roleCode === 'CLIENT') {
               this.authError = null;
 
-              alert("Thành công.");
-              router.push("/");
+              alert('Thành công.');
+              router.push('/');
             } else {
-              alert("Thatas bai.");
+              alert('Thatas bai.');
               this.submitted = false;
               this.authError =
-                "Đăng nhập thất bại. Tài khoản hoặc mật khẩu không đúng. haha";
+                'Đăng nhập thất bại. Tài khoản hoặc mật khẩu không đúng. haha';
             }
           });
         }
@@ -279,12 +285,12 @@ export default {
         this.submitted = false;
         if (e.status == 401) {
           this.authError =
-            "Đăng nhập thất bại. Tài khoản hoặc mật khẩu không đúng.";
+            'Đăng nhập thất bại. Tài khoản hoặc mật khẩu không đúng.';
         } else {
           if (e.data && e.data.Message) {
             this.authError = e.data.Message;
           } else {
-            this.authError = "Đăng nhập thất bại. Vui lòng thử lại sau.";
+            this.authError = 'Đăng nhập thất bại. Vui lòng thử lại sau.';
           }
         }
       }
@@ -293,7 +299,7 @@ export default {
 };
 </script>
 
-<style  scoped>
+<style scoped>
 #main .form-login {
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.16);
   border-radius: 30px;
