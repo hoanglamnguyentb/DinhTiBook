@@ -133,7 +133,7 @@ export default {
           {
             headers: {
               Authorization:
-                'Bearer pat_Z95YU1MIDAml2Ln3PVvrQMDFyDicNI9tgxvn7OhgT5eaq4fzMYR5MZjp3qJDNeMB',
+                'Bearer pat_SBfelSjRBVO8v0Qp8p9OedtkzunLLlUsLjqaxQmgn2ixklRyO7i1wg4PX8RrhugM',
               'Content-Type': 'application/json',
               Accept: '*/*',
               Host: 'api.coze.com',
