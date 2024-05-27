@@ -2,7 +2,7 @@
   <PageHeader :title="title" :items="items" />
   <a-row>
     <a-col :span="24">
-      <a-card title="Thêm mới sản phẩm">
+      <a-card title="Sửa mới sản phẩm">
         <template #extra>
           <a-button  type="primary">Quay lại</a-button>
         </template>

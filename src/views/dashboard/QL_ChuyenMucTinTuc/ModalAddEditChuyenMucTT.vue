@@ -13,7 +13,9 @@
         <a-form-item ref="tenDanhMuc" label="Tên chuyên mục" name="tenDanhMuc">
           <a-input v-model:value="chuyenmuc.tenDanhMuc" />
         </a-form-item>
-        
+        <a-form-item>
+          <a-checkbox v-model:checked="chuyenmuc.isHienThi">Hiển thị</a-checkbox>
+        </a-form-item> 
         
         
       </a-form>
@@ -37,7 +39,7 @@ export default {
       chuyenmuc: {
         tenDanhMuc: '',
         maDanhMuc:'',
-    
+        isHienThi: false
       },
       rules:{
         maDanhMuc:{

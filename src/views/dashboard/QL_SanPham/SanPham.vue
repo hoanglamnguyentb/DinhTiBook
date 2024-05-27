@@ -44,18 +44,11 @@
                          <i class="ri-information-line fs-16"></i>
                       </router-link>
                     </li>
-                    <li
-                      class="list-inline-item edit"
-                      data-bs-toggle="tooltip"
-                      data-bs-trigger="hover"
-                      data-bs-placement="top"
-                      title="Chỉnh sửa">
-                      <b-link
-                        variant="text-primary"
-                        class="d-inline-block edit-item-btn"
-                        @click="openModalEdit(record.id)">
-                        <i class="ri-pencil-fill fs-16"></i>
-                      </b-link>
+                    <li>
+                    
+                    <router-link :to="{ name: 'Edit_SanPham', params: { id: record.id } }">
+                         <i class="ri-pencil-fill fs-16"></i>
+                      </router-link>
                     </li>
                     <li>
                         <a
@@ -166,7 +159,6 @@ export default {
       }).then(async (result) => {
         if (result.value) {
           try {
-            //xóa trên database
             await APIService.delete("/SanPham/delete/" + event.id);
             toast.success("Xóa thành công.", {
               theme: "colored",
@@ -237,7 +229,7 @@ export default {
       this.$refs.modalAddEditSanPham.showModal();
     },
     openModalEdit(id){
-      this.$refs.modalAddEditSanPham.showModal(id);
+      
     },
     OpenDetai(id){
       

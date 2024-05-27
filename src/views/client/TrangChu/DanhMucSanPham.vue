@@ -2,31 +2,58 @@
   <Header></Header>
   <div style="background-color: white; padding-top: 70px">
     <div class="container">
-      <a-row>
+      <!-- <a-row>
         <a-col :span="16">
-          <h1 class="title">{{ TenNhomDoTuoi }}</h1>
+          <h1 class="title">Từ 0-3</h1>
           <div class="summary">
-            <p style="text-align: justify" >
-              {{ TinTuc.moTa }}
+            <p style="text-align: justify">
+              Ở lứa tuổi 0-3, trẻ vẫn còn rất nhỏ, nhận thức với thế giới xung
+              quanh chưa nhiều. Trẻ chưa thể tự chủ và gần như không thể tách
+              rời khỏi bố mẹ. Có thể chia thành hai giai đoạn nhỏ hơn để bố mẹ
+              thấy rõ các đặc điểm khác biệt của trẻ.<br /><br />&nbsp;
             </p>
             <div class="see-more">
               <p style="text-align: justify">
-                <a :href= "`/tin-tuc/`+TinTuc.id"
+                <a href="http://dinhtibooks.com.vn/tuoi-0--3--c63.html"
                   ><span style="color: #e74c3c">Xem thêm</span></a
                 >
               </p>
             </div>
           </div>
         </a-col>
-        <a-col :span="8">
-          <img :src="'http://localhost:44301/'+ TinTuc.hinhAnh" alt="Hình ảnh" style="width: 100%; height: auto; padding-left: 20px;">
+        <a-col :span="8"></a-col>
+      </a-row> -->
+      <a-row>
+        <a-col :span="6">
+          <div class="background-white">
+            <h2 class="title">Bộ lọc sản phẩm</h2>
+            <div class="box-filter">
+              <div class="item-filter">
+                <div class="title-filter d-flex align-items space-between">
+                  <span>Khoảng giá (VNĐ)</span>
+                  <i class="fa fa-angle-down"></i>
+                </div>
+                <div class="content-filter">
+                  <div class="item-attr d-flex align-items">
+        
+                        <div class="icon-check " @click="LocGia(100,500)">
+                    
+                    </div>
+                    <a href="https://www.tncstore.vn/gaming-pc.html?max=11000000&amp;min=8000000" class="filter-right d-flex align-items space-between">
+                      <span>8 triệu - 11 triệu</span>
+                      <span class="total-attr">(2)</span>
+                    </a>
+                  </div>
+                  <li>
+                                <a id="price-m-0" class="m-checkbox-checked" onclick="catalog_ajax.price_change('0',150000)" title="0đ - 150,000đ" price-m-from="">0đ - 150,000đ</a>
+                            </li>
+                </div>
+              </div>
+            </div>
+          </div>
         </a-col>
-      </a-row>
-
-      <div class="filter">
-        <div class="filter-left"></div>
-      </div>
-      <div class="bottom">
+        <a-col :span="18">
+          <div class="bottom">
         <span class="count_all">{{ this.optionPage.totalCount }} kết quả</span>
         <div class="grid">
           <div v-for="(item, index) in lstSanPham" :key="index" class="item">
@@ -60,6 +87,10 @@
           @page-changed="handlePageChange"
         />
       </div>
+        </a-col>
+      </a-row>
+      
+      
     </div>
   </div>
   <FooterClient></FooterClient>
@@ -77,7 +108,6 @@ export default {
     Header,
     FooterClient,
     Pagination,
-    FooterClient
   },
   data() {
     return {
@@ -88,11 +118,12 @@ export default {
         pageSize: 20,
         totalCount: 0,
       },
-      TinTuc:[],
-      TenNhomDoTuoi:'',
     };
   },
   methods: {
+    LocGia(min, max){
+      console.log(`Min: ${min}, Max: ${max}`);
+    },
     handlePageChange(page) {
       this.optionPage.pageIndex = page;
       this.loadData(this.optionPage.pageIndex, this.optionPage.pageSize);
@@ -102,7 +133,7 @@ export default {
       var searchParam = {
         pageIndex: pageIndex,
         pageSize: pageSize,
-        NhomDoTuoiFilter: paramId,
+        DanhMucFilter: paramId,
       };
       if (params) {
         searchParam = params;
@@ -119,46 +150,20 @@ export default {
         this.optionPage.totalCount = res.totalCount;
       }
     },
-    async getTinTuc(){
-      var Search = {
-        TieuDeFilter: this.$route.params.id,
-        DanhMucFilter: "NHOMDOTUOI",
-       
-      };
-      var urlQuery = new URLSearchParams(Search).toString();
-      await APIService.get('/TinTuc?' + urlQuery)
-      .then(response =>{
-        console.log(response.data.data.items)
-        this.TinTuc = response.data.data.items[0]
-        console.log('tt',this.TinTuc.tieuDe)
-      })
-      .catch(error =>{
-        console.log(error)
-      })
-    },
-    async getNhomDoTuoi(){
-      var paramId = this.$route.params.id;
-      await APIService.get('/NhomDoTuoi?MaNhomFilter=' + paramId)
-      .then(response =>{
-        this.TenNhomDoTuoi = response.data.data.items[0].tenNhom
-      })
-      .catch(error =>{
-        console.log(error)
-      })
-    },
     formatCurrency(x) {
       return Common.formatCurrency(x);
     },
   },
   mounted() {
     this.loadData(this.optionPage.pageIndex, this.optionPage.pageSize);
-    this.getTinTuc();
-    this.getNhomDoTuoi();
   },
 };
 </script>
 
 <style>
+.container{
+  max-width: 1200px;
+}
 .top .title {
   margin-bottom: 10px;
   font-weight: 700;
@@ -195,7 +200,6 @@ export default {
   -webkit-box-orient: vertical;
 }
 .see-more {
-  margin-top: 50px;
   border: 1px dashed #e9262a;
   border-radius: 30px;
   padding: 8px 13px 8px 16px;
@@ -234,7 +238,7 @@ export default {
 }
 .bottom .grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr ;
   grid-column-gap: 20px;
   grid-row-gap: 30px;
   padding-bottom: 20px;
@@ -244,7 +248,7 @@ export default {
   padding: 10px;
 }
 .bottom .grid .item .img_box {
-  background-color: #f9f9f9;
+
   width: 100%;
   height: 216px;
   overflow: hidden;
@@ -300,5 +304,51 @@ export default {
   cursor: pointer;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   transform: translate3d(0, -2px, 0);
+}
+.background-white {
+    background: #fff;
+    padding: 24px;
+    border:  1px solid #ddd;
+    border-radius: 30px;
+}
+.product-category .left .title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 24px;
+}
+.box-filter .item-filter {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #ccc;
+}
+.box-filter .title-filter {
+    margin-bottom: 16px;
+    width: 100%;
+}
+.space-between {
+    justify-content: space-between !important;
+}
+.align-items {
+    align-items: center !important;
+}
+.box-filter .content-filter {
+    max-height: 300px;
+    overflow-x: auto;
+    transition: max-height 350ms ease-out;
+}
+.box-filter .item-attr {
+    margin-bottom: 8px;
+}
+.box-filter .icon-check {
+    width: 14px;
+    height: 14px;
+    margin-right: 6px;
+    border: 1px solid #29324e;
+    position: relative;
+    z-index: 9;
+}
+.box-filter .filter-right {
+    width: calc(100% - 20px);
+    padding-right: 10px;
 }
 </style>

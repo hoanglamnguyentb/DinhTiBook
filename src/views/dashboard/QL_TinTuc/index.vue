@@ -19,6 +19,7 @@ import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 
 import Common from "@/helpers/Common"
+import { errors } from "jose";
 
 
 export default {
@@ -31,6 +32,7 @@ export default {
   },
   data() {
     return {
+      URL: 'http://localhost:44301/',
       title: "Quản lý tin tức",
       items: [{
         text: "Dashboard",
@@ -46,16 +48,16 @@ export default {
       addCustomerModal: false,
       editCustomerModal: false,
       tableColumns: [
-        { title: "Hình ảnh",  dataIndex: "hinhAnh", width: 100,key:"hinhAnh1"  },
-        { title: "Tiêu đề", dataIndex: "title", width:200 },
-        { title: "Chuyên mục", dataIndex: "chuyenMuc", width:120 },
-        { title: "Danh mục", dataIndex: "danhMuc", width:120 },
-        { title: "Trạng thái", dataIndex: "trangThai", width:120  },
-        { title: "Nổi bật", dataIndex: "noiBat", key:"NoiBat", width:100},
-        { title: "Ngày hiển thị", dataIndex: "publicDate", align:'center' , key:"NgayHienThi", width:120},
-        { title: "Ngày tạo", dataIndex: "createdDate", key:"NgayTao" , width:120},
-        { title: "Hẹn ngày đăng", dataIndex: "henGioDang", key:"henGioDang" , width:120},
-        { title: "Trạng thái đăng", dataIndex: "trangThaiDang", key:"trangThaiDang" , width:120},
+        { title: "Hình ảnh",  dataIndex: "hinhAnh", width: 200,key:"hinhAnh1"  },
+        { title: "Tiêu đề", dataIndex: "tieuDe", width:500 },
+        { title: "Chuyên mục", dataIndex: "danhMuc", width:120 },
+        
+       
+        { title: "Nổi bật", dataIndex: "isNoiBat", key:"NoiBat", width:100},
+       
+        { title: "Ngày tạo", dataIndex: "ngayTao", key:"ngayTao" , width:120},
+
+ 
         { title: "Thao tác", key: "action" },
       ],
       rangeDateconfig: {
@@ -89,10 +91,21 @@ export default {
         titleFilter:'',
         publicDateFilter:'',
         isPublicFilter:''
-      }
+      },
+      lstChuyenMuc:[],
     };
   },
   methods: {
+    getlstChuyenMuc(){
+      APIService.get("DanhMucTinTuc/GetDataByPage")
+      .then(response =>{
+        console.log('ll', response)
+          this.lstChuyenMuc = response.data.data.items;
+      })
+      .catch(error =>{
+        console.log(error)
+      })
+    },
     getToken(){
         return user = JSON.parse(localStorage.getItem("user"));
     },
@@ -209,7 +222,7 @@ export default {
       }
 
       var urlQuery = new URLSearchParams(searchParam).toString();
-      var result = await APIService.get("/TinTuc/GetDataByPage?"+urlQuery);
+      var result = await APIService.get("/TinTuc?"+urlQuery);
       this.lstBaiViet = result.data.data.items;
       if(result.data.data != null && result.data.data.items != null){
         var res = result.data.data;
@@ -227,6 +240,7 @@ export default {
   created(){
   },
   mounted() {
+    this.getlstChuyenMuc()
     var checkAll = document.getElementById("checkAll");
     if (checkAll) {
       checkAll.onclick = function () {
@@ -329,10 +343,10 @@ export default {
               :dataSource="lstBaiViet"
               :pagination="false"
               :loading="loading"
-              :scroll="{ x: 1200}">
+              >
                 <template #bodyCell="{ column, record }">
                   <template v-if="column.key === 'hinhAnh1'">
-                    <img :src="'http://localhost:44301/api/FileAndFolder/'+ record.hinhAnh" alt="Hình ảnh" style="width: 50px; height: auto;">
+                    <img :src="this.URL+ record.hinhAnh" alt="Hình ảnh" style="width: 50px; height: auto;">
                   </template>
                   <template v-if="column.key === 'action'">
                     <ul class="list-inline hstack gap-2 mb-0">
@@ -358,29 +372,19 @@ export default {
                       </li>
                     </ul>
                   </template>
-                  <template v-if="column.key === 'NgayTao'">
-                    {{ formatDate(record.createdDate) }}
+                  <template v-if="column.key === 'ngayTao'">
+                    {{ formatDate(record.ngayTao) }}
                   </template>
-                  <template v-if="column.key === 'NgayHienThi'">
-                    {{ formatDate(record.publicDate) }}
-                  </template>
-                  <template v-if="column.key === 'henGioDang'">
-                    {{ formatDate(record.henGioDang) }}
-                  </template>
+                  
+                 
                   <template v-if="column.key === 'NoiBat'">
-                    <td style="font-weight: 700;font-size: 18px; color: green" v-if="record.noiBat == true">
+                    <td style="font-weight: 700;font-size: 18px; color: green" v-if="record.isNoiBat == true">
                         
                         <i class="ri-check-line"></i>
                       </td>
-                      <td v-if="record.noiBat == false"></td>
+                      <td v-if="record.isNoiBat == false"></td>
                   </template>
-                  <template v-if="column.key === 'trangThaiDang'">
-                    <td style="font-weight: 700;font-size: 18px; color: green" v-if="record.trangThaiDang == true">
-                        
-                        <i class="ri-check-line"></i>
-                      </td>
-                      <td v-if="record.trangThaiDang == false"></td>
-                  </template>
+                  
                   
                 </template>
               </a-table>
