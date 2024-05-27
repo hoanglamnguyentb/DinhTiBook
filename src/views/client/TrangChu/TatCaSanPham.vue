@@ -7,7 +7,7 @@
         <span class="btn-drop-filter btn-drop-filter3"><i class="fa fa-angle-down"></i></span>
         <p class="titlea"><span>Lọc theo</span> <br>Danh mục</p>
         <div class="outer outer-filter3">
-                                                <div class="div-input cat-box div-a">
+                                                <!-- <div class="div-input cat-box div-a">
                         <input type="checkbox" onclick="checkCat(43)" name="cat_child" id="cat_43" value="43">
                         <label for="cat_43">Top 4 sách tiếng Anh cho trẻ tự học</label>
                     </div>
@@ -62,7 +62,13 @@
                                     <div class="div-input cat-box div-a">
                         <input type="checkbox" onclick="checkCat(18)" name="cat_child" id="cat_18" value="18">
                         <label for="cat_18">Sáng tạo</label>
-                    </div>
+                    </div> -->
+          <div  v-for="(item, index) in lstDanhMuc" :key="index">
+            <div class="div-input cat-box div-a">
+              <input type="checkbox" onclick="checkCat(18)" name="cat_child" id="cat_18" value="18">
+              <label for="cat_18">{{ item.categoryName }}</label>
+            </div>
+          </div>
                                     </div>
     </div>
     <div class="box-filter">
@@ -241,9 +247,21 @@ export default {
         pageSize: 20,
         totalCount: 0,
       },
+      lstDanhMuc:[]
     };
   },
   methods: {
+    async getDanhMuc(){
+      
+      await APIService.get('/DanhMuc/GetDataByPage')
+      .then(response =>{
+        this.lstDanhMuc = response.data.data.items
+        console.log('sdww', this.lstDanhMuc)
+      })
+      .catch(error =>{
+        console.log(error)
+      })
+    },
     handlePageChange(page) {
       this.optionPage.pageIndex = page;
       this.loadData(this.optionPage.pageIndex, this.optionPage.pageSize);
@@ -276,6 +294,7 @@ export default {
   },
   mounted() {
     this.loadData(this.optionPage.pageIndex, this.optionPage.pageSize);
+    this.getDanhMuc()
   },
 }
 </script>
