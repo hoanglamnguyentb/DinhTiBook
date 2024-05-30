@@ -152,7 +152,7 @@
                   class="position-absolute top-100 start-0 bg-white border border-1 w-100 search-box"
                 >
                   <a
-                    href=""
+                    :href="`/sach/${item.slug}`"
                     class="search-box-item text-primary"
                     v-for="(item, index) in lstSanPham"
                     :key="index"

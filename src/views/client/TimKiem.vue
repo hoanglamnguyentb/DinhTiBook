@@ -10,11 +10,11 @@
         <span class="count_all">{{ this.optionPage.totalCount }} kết quả</span>
         <div class="grid">
           <div v-for="(item, index) in lstSanPham" :key="index" class="item">
-            <a :href="`/detail/` + item.id" class="img_box">
+            <a :href="`/sach/` + item.slug" class="img_box">
               <img :src="URL + item.pathAnh" alt="" />
             </a>
             <div class="info-box">
-              <a class="name" :href="`/detail/` + item.id">{{
+              <a class="name" :href="`/sach/` + item.slug">{{
                 item.tenSach
               }}</a>
               <p class="price">

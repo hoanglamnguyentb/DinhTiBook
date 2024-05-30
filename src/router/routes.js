@@ -71,7 +71,7 @@ export default [
   //Detai san pham
 
   {
-    path: '/detail/:id',
+    path: '/sach/:id',
     name: 'DetailSanPham',
     meta: {
       title: 'Chi tiết sản phẩm',
