@@ -28,17 +28,23 @@ import APIService from "@/helpers/ApiService";
 
 export default {
   props:{
-    parentId :'',
-    SoLanHienThi: 0,
-  },
+      SoLanHienThi: 0,
+    },
   data() {
+    
     return {
+      
       previewVisible: false,
       previewImage: '',
       previewTitle: '',
       fileList: [],
       uploading: false,
       
+
+      // IdCha: '53402d4a-c87a-4043-98cc-08dc7d931773',
+      FileLayVe:'',
+      URL: 'http://localhost:44301/',
+      IdFile: '',
     };
   },
   methods: {
@@ -96,11 +102,42 @@ export default {
         });
     },
     handleRemove(file) {
-      const index = this.fileList.indexOf(file);
-      this.fileList.splice(index, 1);
-      console.log('xóa', this.fileList)
+      APIService.delete("/FileManager/delete?IDItem="+ this.IdFile)
+      .then(response =>{
+        const index = this.fileList.indexOf(file);
+        if (index !== -1) {
+          this.fileList.splice(index, 1);
+          console.log('Đã xóa file:', file);
+          console.log('fie da xoa', response)
+        }
+      })
+      .catch(error=>{
+        console.log('loi roi', error)
+      })
     },
-
+    getFile(idCha){
+      console.log('Đã nhận được idCha: '+idCha);
+      APIService.get("FileManager/getbyParentID?parentid="+ idCha)
+      .then(response => {
+        
+        this.IdFile = response.data.data[0].id
+        console.log('idfile', this.IdFile)
+        for(var i=0; i<response.data.data.length; i++){
+          let file = {
+            url: this.URL + response.data.data[i].path,
+            status: 'done'
+          };
+        this.fileList.push(file);
+        
+        }
+        
+        console.log('filelist',this.fileList)
+      })
+      
+    }
+  },
+  mounted(){
+    
   }
 };
 </script>

@@ -125,7 +125,7 @@ export default {
           `https://api.coze.com/open_api/v2/chat`,
           {
             // conversation_id: '123',
-            bot_id: '7372188571547156498',
+            bot_id: '7371838891596595217',
             user: '29032201862555',
             query: userMessage,
             stream: false,
@@ -133,7 +133,7 @@ export default {
           {
             headers: {
               Authorization:
-                'Bearer pat_Z95YU1MIDAml2Ln3PVvrQMDFyDicNI9tgxvn7OhgT5eaq4fzMYR5MZjp3qJDNeMB',
+                'Bearer pat_SBfelSjRBVO8v0Qp8p9OedtkzunLLlUsLjqaxQmgn2ixklRyO7i1wg4PX8RrhugM',
               'Content-Type': 'application/json',
               Accept: '*/*',
               Host: 'api.coze.com',
@@ -141,7 +141,13 @@ export default {
             },
           }
         );
-        const botMessage = response.data.messages[0].content;
+
+        var botMessage = "Không tìm thấy thông tin!"
+        response.data.messages.forEach(item => {
+          if(item.type == "answer") {
+             botMessage = item.content;
+          }
+        });
         this.chatLogs.push({ type: 'user', message: botMessage });
         this.isLoading = false;
         localStorage.setItem('chatLogs', JSON.stringify(this.chatLogs));
@@ -225,6 +231,7 @@ export default {
   border-radius: 5px;
   /*   box-shadow: 0px 5px 35px 9px #464a92; */
   box-shadow: 0px 5px 35px 9px #ccc;
+  z-index: 99999;
 }
 .chat-box-toggle {
   float: right;

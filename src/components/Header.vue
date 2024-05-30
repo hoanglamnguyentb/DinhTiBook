@@ -88,7 +88,7 @@
                 </ul>
               </li>
               <li class="level_0 sort">
-                <a href="">Chọn sách <i class="ri-arrow-down-s-line"></i></a>
+                <a href="/tat-ca-san-pham">Chọn sách <i class="ri-arrow-down-s-line"></i></a>
                 <ul>
                   <li class="sub-menu-level1">
                     <a href="">Sách nổi bật</a>

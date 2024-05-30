@@ -41,6 +41,13 @@
                         <li>{{ index+ 1 }}</li>
                       </ul>
                     </template>
+                    <template v-if="column.key === 'HienThi'">
+                    <td style="font-weight: 700;font-size: 18px; color: green" v-if="record.isHienThi == true">
+                        
+                        <i class="ri-check-line"></i>
+                      </td>
+                      <td v-if="record.isHienThi == false"></td>
+                  </template>
                   <template v-if="column.key === 'action'">
                     <ul class="list-inline hstack gap-2 mb-0">
                       <li>
@@ -145,7 +152,7 @@ export default {
         { title: "TT", key: "STT" , width: 70},
         { title: "Mã danh mục", dataIndex: "maDanhMuc", key: "maDanhMuc"},
         { title: "Tên danh mục", dataIndex: "tenDanhMuc", key: "maDanhMuc" },
-       
+        { title: "Hiển thị", dataIndex: "isHienThi", key: "HienThi"},
         { title: "Thao tác", key: "action", width: 200 },
       ],
       idDanhMuc: 'DM_TINTUC'

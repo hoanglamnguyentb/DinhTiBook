@@ -14,7 +14,7 @@ import PageHeader from "@/components/page-header";
 import { QuillEditor } from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 
-import FileManager from "@/components/FileManager";
+import FileManager from "../../../components/FileManager/FileManager.vue";
 import APIService from "@/helpers/ApiService";
 
 import { toast } from "vue3-toastify";
@@ -97,15 +97,14 @@ export default {
         title: "",
         chuyenMuc: "",
         content: "",
-        trangThai: "",
-        publicDate: new Date(),
+        trangThai: "",    
         description: "",
-        noiBat: 0,
+        isNoiBat: 0,
         hinhAnh: "",
-        henGioDang: new Date(),
         danhMuc: "",
         fileDinhKem:"",
       },
+      newPostId: '',
       chuyenmuc: [],
       lstChuyenMuc: [],
       submitted: false,
@@ -119,7 +118,7 @@ export default {
         { text: "Không", value: 0 },
         { text: "Có", value: 1 },
       ],
-      idDanhMuc: "DM_TINTUC",
+
       rules:{
        TieuDe:[
         {
@@ -144,12 +143,24 @@ export default {
     deleteRecord(ele) {
       ele.target.parentElement.parentElement.parentElement.remove();
     },
-
+    
     async onSubmit() {
   try {
     // this.post.henGioDang.setHours(0,0,0,0);
     console.log('post', this.post)
-    await APIService.post("tintuc/create", this.post);
+    await APIService.post("Tintuc/Create", this.post)
+    .then(response => {
+      this.newPostId = response.data.data.id;
+ 
+     // Đặt lại tất cả thuộc tính của this.post trừ isNoiBat
+    for (const key in this.post) {
+        if (key !== 'isNoiBat') {
+            this.post[key] = '';
+        }
+    }
+    this.post.noiDung = '';
+      this.post.isNoiBat = false;
+    })
     toast.success("Thêm bài viết thành công", {
       theme: "colored",
       autoClose: 2000,
@@ -179,7 +190,9 @@ export default {
         autoClose: 2000,
       });
     }
+    
   }
+ 
 }
 
 ,
@@ -187,19 +200,19 @@ export default {
     handleCheckboxChange() {
       // Kiểm tra nếu checkbox được chọn
       if (this.checked) {
-        this.post.noiBat = 1; // Thiết lập post.noiBat = 1
+        this.post.isNoiBat = 1; // Thiết lập post.noiBat = 1
       } else {
-        this.post.noiBat = 0; // Thiết lập post.noiBat = 0
+        this.post.isNoiBat = 0; // Thiết lập post.noiBat = 0
       }
     },
     async getChuyenMuc(){
-      var result = await APIService.get(`/ThongTinDanhMuc/GetDataByPage?MaDanhMuc=` + this.idDanhMuc);
+      var result = await APIService.get(`/DanhMucTinTuc/GetDataByPage`);
       this.chuyenmuc = result.data.data.items;
         
       for(var i=0; i<this.chuyenmuc.length; i++){
             var chuyenmucItem ={
-                value: this.chuyenmuc[i].giaTri,
-                label: this.chuyenmuc[i].giaTri
+                value: this.chuyenmuc[i].maDanhMuc,
+                label: this.chuyenmuc[i].tenDanhMuc
             };
             this.lstChuyenMuc.push(chuyenmucItem);
         }
@@ -210,10 +223,7 @@ export default {
       this.post.hinhAnh = data.name;
       console.log('sss',this.post.hinhAnh);
     },
-    handleSelectFile_DinhKem(data){
-      this.post.fileDinhKem = data.name;
-      console.log('file',this.post.fileDinhKem);
-    },
+    
     async submit(){
         this.$refs.formRef.validate(valid => {
         if (valid) {
@@ -258,6 +268,15 @@ export default {
       },
     };
   },
+  watch:{
+    newPostId: function(newVal, oldVal) {
+      if (newVal) {
+        // Gọi hàm uploadFiles của FileManager khi newProductId thay đổi
+        this.$refs.childRef.handleUpload(newVal);
+        console.log('đã ')
+      }
+    }
+  },
   mounted() {
     this.getChuyenMuc()
   },
@@ -273,7 +292,7 @@ export default {
   <a-form
   >
     <a-row :gutter="20">
-      <a-col :span="16">
+      <a-col :span="24">
         <a-card>
           <template #title>
             <h5 class="custom-card-title mb-0">Thông tin bài viết</h5>
@@ -281,20 +300,22 @@ export default {
           <div>
             
 
-
-            <div>
+            <a-form-item>
+              <div>
               <label class="form-label" for="title">Chuyên mục tin tức</label>
               <Multiselect class="form-control"
               :class="{
                   'is-invalid': submitted && v$.post.chuyenMuc.$error,
                 }"
-              v-model="post.chuyenMuc" value="0" :close-on-select="true" :searchable="true"
+              v-model="post.danhMuc" value="0" :close-on-select="true" :searchable="true"
                 :create-option="true" :options="lstChuyenMuc" />
              
             </div>
+            </a-form-item>
+            
             <a-form-item>
               <label for="TieuDe">Tiêu đề:</label>
-              <a-input name="TieuDe" size="large" id="TieuDe" v-model:value="post.title" />
+              <a-input name="TieuDe" size="large" id="TieuDe" v-model:value="post.tieuDe" />
             </a-form-item>
             <a-form-item label="Nổi bật">
             
@@ -305,7 +326,7 @@ export default {
               <QuillEditor
                 theme="snow"
                 :options="editorOptions"
-                v-model:content="post.content"
+                v-model:content="post.noiDung"
                 contentType="html"
                 @change="quill"
               />
@@ -313,7 +334,7 @@ export default {
             <a-form-item>
               <label for="MoTa">Mô tả bài biết:</label>
               <a-textarea
-                v-model:value="post.description"
+                v-model:value="post.moTa"
                 placeholder="Nhập mô tả bài viết"
                 allow-clear
                 :rows="5"
@@ -321,112 +342,22 @@ export default {
             </a-form-item>
             <a-form-item label="Ảnh đại diện">
               <FileManager
-                :active="showFileManager"
-                :showButton="true"
-                :showPreview="true"
-                :closable="false"
-                :maxCount="1"
-                :multiple="false"
-                :accept="acceptType"
-                @select-file="handleSelectFile"
-              />
+                    ref="childRef"
+                    :parentId="newPostId"
+                    :SoLanHienThi="1"
+                  />
             </a-form-item>
-            <a-form-item label="Tải file đính kèm">
+            <!-- <a-form-item label="Tải file đính kèm">
               <FileManager
-                :active="showFileManager"
-                :showButton="true"
-                :showPreview="true"
-                :closable="false"
-                :maxCount="1"
-                :multiple="false"
-                :accept="acceptType_File"
-                @select-file="handleSelectFile_DinhKem"
-              />
-            </a-form-item>
+                    ref="childRef"
+                    :parentId="newProductId"
+                  />
+            </a-form-item> -->
           </div>
         </a-card>
       </a-col>
 
-      <a-col :span="8">
-        <a-card>
-          <template #title>
-            <h5 class="custom-card-title mb-0">Thông tin công khai</h5>
-          </template>
-
-          <div>
-            <a-form-item>
-              <label for="TieuDe">Danh mục:</label>
-              <a-select
-                
-                v-model:value="post.danhMuc"
-                placeholder="Chọn trạng thái"
-                size="large"
-                :options="[
-                { value: 'THONG_BAO', label: 'Thông báo' },
-                { value: 'TIN_TUC', label: 'Tin tức' },
-                
-              ]"
-              >
-              </a-select>
-            </a-form-item>
-            <a-form-item>
-              <label for="TieuDe">Trạng thái:</label>
-              <a-select
-                
-                v-model:value="post.trangThai"
-                placeholder="Chọn trạng thái"
-                size="large"
-                :options="[
-                { value: 'BAN_NHAP', label: 'Bản nháp' },
-                { value: 'XUAT_BAN', label: 'Xuất bản' },
-                { value: 'GO_BO', label: 'Gỡ bỏ' },
-              ]"
-              >
-              </a-select>
-            </a-form-item>
-            <div>
-              <label for="">Ngày phát hành:</label>
-              <flat-pickr v-model="post.publicDate" :config="datetimeConfig" placeholder="Chọn ngày phát hành" class="form-control"></flat-pickr>
-            </div>
-            <a-form-item>
-              <label for="">Hẹn ngày đăng:</label>
-              <flat-pickr v-model="post.henGioDang" :config="datetimeConfig_HenNgayDang" placeholder="Chọn ngày đăng" class="form-control"></flat-pickr>
-              <!-- <a-date-picker show-time placeholder="Chọn ngày đăng" @change="post.henGioDang" v-model="post.henGioDang"  @ok="post.henGioDang"/> -->
-             
-            </a-form-item>
-          </div>
-        </a-card>
-        <a-card style="margin-top: 20px;">
-          <template #title>
-          <h5 class="custom-card-title mb-0">Thông tin Meta</h5>
-          </template>
-          <div>
-            <a-row :gutter="15">
-                <a-col :span="12">
-                    <a-form-item>
-                        <label for="">Tiêu đề Meta:</label>
-                        <a-input size="large" id="aaaa"/>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="12">
-                    <a-form-item>
-                        <label for="">Từ khóa tìm kiếm:</label>
-                        <a-input size="large" id="eee" />
-                    </a-form-item>
-                </a-col>
-            </a-row>
-            <a-form-item>
-              <label for="">Mô tả:</label>
-              <a-textarea
-             
-                placeholder="Nhập mô tả bài viết"
-                allow-clear
-                :rows="5"
-              />
-            </a-form-item>
-          </div>
-        </a-card>
-      </a-col>
+     
     </a-row>
   </a-form>
   <a-row style="margin: 50px 0px">

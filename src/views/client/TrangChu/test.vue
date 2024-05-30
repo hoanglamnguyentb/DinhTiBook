@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import File_Manager from '../../../components/FileManager/File_Manager.vue';
+import File_Manager from '../../../components/FileManager/FileManagerHienThi.vue';
 export default {
   components:{
     File_Manager

@@ -1,8 +1,9 @@
 <template>
-  <div style="margin-top: 70px">
+  <Header></Header>
+  <div style="padding-top: 70px; padding-bottom: 100px; background-color: white;">
     <div class="container">
       <div class="main-info">
-        <a-row>
+        <a-row :gutter="50">
           <a-col :span="16" class="left">
             <a-form
               :model="ThongTinKH"
@@ -10,14 +11,14 @@
               ref="formRef"
               :rules="rules"
             >
-              <p>Thông tin giao hàng</p>
+              <p style="font-size: 17px; font-weight: 600;">Thông tin giao hàng</p>
               <div class="box">
                 <a-row :gutter="[24]">
                   <a-col :span="12">
                     <a-form-item>
                       <a-input
                         v-model:value="ThongTinKH.TenKhachHang"
-                        placeholder="input placeholder"
+                        placeholder="Họ và tên"
                       />
                     </a-form-item>
                   </a-col>
@@ -30,56 +31,57 @@
                     </a-form-item>
                   </a-col>
                 </a-row>
-                <!-- <a-row :gutter="[20]">
+                <a-row :gutter="[20]">
                 <a-col :span="8">
                   <a-form-item >
-                    <a-select v-model:value="ThongTinKH.name" placeholder="Tỉnh/Thành phố">
-                      <a-select-option value="shanghai">Zone one</a-select-option>
-                      <a-select-option value="beijing">Zone two</a-select-option>
+                    <a-select 
+                      v-model:value="ThongTinKH.Tinh" 
+                      placeholder="Tỉnh/Thành phố"
+                      :options="Tinh"
+                      :field-names="{ label: 'name', value: 'codename', options: 'Tinh' }"
+                      @change="getHuyen">
+                      
                     </a-select>
                   </a-form-item>
                 </a-col>
                 <a-col :span="8">
                   <a-form-item >
-                    <a-select v-model:value="ThongTinKH.name" placeholder="Quận/Huyện">
-                      <a-select-option value="shanghai">Zone one</a-select-option>
-                      <a-select-option value="beijing">Zone two</a-select-option>
+                    <a-select 
+                      v-model:value="ThongTinKH.Huyen" 
+                      :options="Huyen"
+                      :field-names="{ label: 'name', value: 'codename', options: 'Huyen' }"
+                      placeholder="Quận/Huyện"
+                      @change="getXa">
+                      
                     </a-select>
                   </a-form-item>
                 </a-col>
                 <a-col :span="8">
                   <a-form-item >
-                    <a-select  placeholder="please select your zone">
-                      <a-select-option value="shanghai">Zone one</a-select-option>
-                      <a-select-option value="beijing">Zone two</a-select-option>
+                    <a-select 
+                      v-model:value="ThongTinKH.Xa" 
+                      placeholder="Phường/Xã"
+                      :options="Xa"
+                      :field-names="{ label: 'name', value: 'codename', options: 'Xa' }"
+                      >
+                      
                     </a-select>
                   </a-form-item>
                 </a-col>
-              </a-row> -->
-                <a-form-item>
-                  <a-input v-model:value="ThongTinKH.Tinh" placeholder="Tỉnh" />
-                </a-form-item>
-                <a-form-item>
-                  <a-input
-                    v-model:value="ThongTinKH.Huyen"
-                    placeholder="Huyện"
-                  />
-                </a-form-item>
-                <a-form-item>
-                  <a-input v-model:value="ThongTinKH.Xa" placeholder="Xã" />
-                </a-form-item>
+              </a-row>
+                
                 <a-form-item>
                   <a-textarea
                     :rows="5"
                     v-model:value="ThongTinKH.DiaChi"
-                    placeholder="Dia chi cu the"
+                    placeholder="Địa chỉ cụ thể"
                   />
                 </a-form-item>
                 <a-form-item>
                   <a-textarea
                     :rows="5"
                     v-model:value="ThongTinKH.GhiChu"
-                    placeholder="Ghi chu"
+                    placeholder="Ghi chú"
                   />
                 </a-form-item>
               </div>
@@ -119,7 +121,7 @@
                   </div>
                 </div>
               </div>
-              <div class="discount">
+              <!-- <div class="discount">
                             <p class="title">Mã giảm giá</p>
 
                             <div class="c-box_promotion">
@@ -129,8 +131,8 @@
                                 
                             </div>
 
-                        </div>
-                        <p class="discount_value"><span>Giảm giá</span><span class="discount_money"></span></p>
+                        </div> -->
+                        <!-- <p class="discount_value"><span>Giảm giá</span><span class="discount_money"></span></p> -->
                         <p class="total  fix">
                             <span>Tổng cộng</span><span class="right total_temporary">{{ $store.state.cartTotal}}</span>
                         </p>
@@ -141,19 +143,38 @@
       </div>
     </div>
   </div>
+  <ModalThanhCong
+    ref="modalThanhCong">
+  </ModalThanhCong>
+  <FooterClient></FooterClient>
 </template>
 
 <script>
+import ModalThanhCong from "./ModalThanhCong.vue";
+import tinhThanhData from '@/stores/dataTinhThanh.json';
 import APIService from "@/helpers/ApiService";
+import Header from '@/components/Header';
+import FooterClient from '@/components/FooterClient.vue';
 export default {
+  components:{
+    ModalThanhCong,
+    Header,
+    FooterClient
+  },
   data() {
     return {
       URL: "http://localhost:44301/",
-      ThongTinKH: {},
-      
+      ThongTinKH: {
+    },
+      Tinh: tinhThanhData.data,
+      Huyen:[],
+      Xa:[],
     };
   },
   methods: {
+    openModalThanhCong() {
+      this.$refs.modalThanhCong.showModal();
+    },
     getUserId(){
       const userClientString = localStorage.getItem('userClient');
       if (userClientString) {
@@ -189,6 +210,7 @@ export default {
         console.log('order', orderId);
         console.log('gio hang', this.$store.state.cart)
         this.OrderDetail(orderId);
+        this.openModalThanhCong();
       })
       .catch(error => {
         console.log('orderloi',error);
@@ -214,10 +236,54 @@ export default {
           console.log('orderdetailloi',error);
         })
       })
-    }
+      
+   
+      this.ThongTinKH.TenKhachHang =''
+      this.ThongTinKH.SoDienThoai='',
+      this.ThongTinKH.DiaChi='',
+      this.ThongTinKH.Tinh='',
+      this.ThongTinKH.Huyen='',
+      this.ThongTinKH.Xa=''
+    },
+    getHuyen(){
+        if (this.ThongTinKH.Tinh) {
+            const selectedCity = this.Tinh.find(city => city.codename === this.ThongTinKH.Tinh);
+            if (selectedCity ) {
+            this.Huyen = selectedCity.districts;
+        }
+        } else {
+            console.log('ok Loi')
+            return [];
+        }
+      },
+      getXa(){
+        if (this.ThongTinKH.Huyen) {
+            const selectedDistricts = this.Huyen.find(districts => districts.codename === this.ThongTinKH.Huyen);            
+            if (selectedDistricts ) {
+            this.Xa = selectedDistricts.wards;
+        }
+        } else {
+            console.log('ok Loi')
+            return [];
+        }
+      }
   },
   mounted(){
     this.getUserId();
+  },
+  watch:{
+    'ThongTinKH.Tinh' : function(newVal, oldVal){
+      if (newVal !== oldVal) {
+        this.ThongTinKH.Huyen = [];
+        this.ThongTinKH.Xa = [];
+      }
+    },
+    'ThongTinKH.Huyen' : function(newVal, oldVal){
+      if (newVal !== oldVal) {
+      
+        this.ThongTinKH.Xa = [];
+      }
+    }
   }
 };
 </script>
@@ -359,5 +425,8 @@ export default {
 main .main-info .order .fix .right {
     float: right;
 
+}
+.container{
+  max-width: 1200px;
 }
 </style>

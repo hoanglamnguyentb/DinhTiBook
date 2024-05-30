@@ -51,13 +51,40 @@ export default [
 
   //Client
   {
+    path: '/tin-tuc/:id',
+    name: 'TinTucClient',
+    meta: {
+      title: 'Đinh Tị Books',
+      authRequired: false,
+    },
+    component: () => import('@/views/client/ChiTietTinTuc'),
+  },
+  {
+    path: '/tat-ca-san-pham',
+    name: 'TatCaSanPham',
+    meta: {
+      title: 'Đinh Tị Books',
+      authRequired: false,
+    },
+    component: () => import('@/views/client/TrangChu/TatCaSanPham'),
+  },
+  {
     path: '/nhom-do-tuoi/:id',
-    name: 'DanhMucSanPham',
+    name: 'NhomDoTuoiSanPham',
     meta: {
       title: 'Đinh Tị Books',
       authRequired: false,
     },
     component: () => import('@/views/client/TrangChu/NhomDoTuoiSanPham'),
+  },
+  {
+    path: '/danh-muc/:id',
+    name: 'DanhMucSanPham',
+    meta: {
+      title: 'Đinh Tị Books',
+      authRequired: false,
+    },
+    component: () => import('@/views/client/TrangChu/DanhMucSanPham'),
   },
   {
     path: '/tim-kiem/:filter?',
@@ -415,15 +442,7 @@ export default [
         },
         component: () => import('@/views/dashboard/QL_TinTuc/Create'),
       },
-      {
-        path: '/dashboard/QL_TinTuc/Edit/:id',
-        name: 'Edit_TinTUc',
-        meta: {
-          title: 'Quản lý sửa tin tức',
-          authRequired: true,
-        },
-        component: () => import('@/views/dashboard/QL_TinTuc/Edit'),
-      },
+      
       {
         path: '/dashboard/QL_HoGiaDinh',
         name: 'QL_HoGiaDinh',
@@ -451,6 +470,16 @@ export default [
         },
         component: () =>
           import('@/views/dashboard/QL_SanPham/AddAndEditSanPham'),
+      },
+      {
+        path: '/dashboard/QL_SanPham/Edit/:id',
+        name: 'Edit_SanPham',
+        meta: {
+          title: 'Sửa sản phẩm',
+          authRequired: true,
+        },
+        component: () =>
+          import('@/views/dashboard/QL_SanPham/EditSanPham'),
       },
       {
         path: '/dashboard/QL_SanPham',
