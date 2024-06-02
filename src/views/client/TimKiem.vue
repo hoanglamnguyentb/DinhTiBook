@@ -7,6 +7,7 @@
         <span class="text-danger">{{ filter }}</span>
       </p>
       <div class="bottom">
+        <PhanLoai @update-search-model="handleUpdateSearchModel"></PhanLoai>
         <span class="count_all">{{ this.optionPage.totalCount }} kết quả</span>
         <div class="grid">
           <div v-for="(item, index) in lstSanPham" :key="index" class="item">
@@ -51,11 +52,13 @@ import Header from '@/components/Header';
 import FooterClient from '@/components/FooterClient.vue';
 import APIService from '@/helpers/ApiService';
 import Common from '@/helpers/Common';
+import PhanLoai from '@/components/PhanLoai.vue';
 export default {
   components: {
     Header,
     FooterClient,
     Pagination,
+    PhanLoai,
   },
   data() {
     return {
@@ -98,6 +101,14 @@ export default {
     },
     formatCurrency(x) {
       return Common.formatCurrency(x);
+    },
+    handleUpdateSearchModel(data) {
+      this.lstSanPham = data.items;
+      this.optionPage = {
+        pageIndex: data.pageIndex,
+        pageSize: data.pageSize,
+        totalCount: data.totalCount,
+      };
     },
   },
   // mounted() {
