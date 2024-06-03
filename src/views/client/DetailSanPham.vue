@@ -12,14 +12,15 @@
             <div style="display: flex" class="product-view-image">
               <div class="product-view-thumbnail">
                 <div class="list-anh">
-                  <a v-for="(item, index) in lstAnh" :key="index" href="">
+                  <a v-for="(item, index) in lstAnh" :key="index" href="" @click.prevent="selectImage(item)">
                     <img :src="URL + item.path" />
                   </a>
                 </div>
               </div>
 
-              <div v-if="lstAnh && lstAnh.length > 0" class="product-image">
-                <img :src="URL + lstAnh[0].path" alt="" />
+              <div v-if="selectedImage" class="product-image">
+                <a href="URL + selectedImage.path" class="easyzoom" ref="zoom"></a>
+                <img   :src="URL + selectedImage.path" alt="" />
               </div>
             </div>
           </div>
@@ -201,6 +202,7 @@ export default {
       lstAnh: [],
       quantity: 1,
       Add: true,
+      selectedImage: null // Khởi tạo biến để lưu trữ ảnh được chọn
     };
   },
   methods: {
@@ -216,6 +218,11 @@ export default {
         console.log("anh", this.lstAnh);
         this.SanPham.pathAnh = this.lstAnh[0].path;
         console.log("sp theem anh", this.SanPham);
+        if (this.lstAnh && this.lstAnh.length > 0) {
+          
+          this.selectedImage = this.lstAnh[0]; // Gán ảnh đầu tiên làm ảnh mặc định
+          
+        }
       });
     },
     TangSoLuong() {
@@ -268,9 +275,18 @@ export default {
         this.$router.push("/gio-hang");
       }
     },
+    selectImage(item) {
+      this.selectedImage = item; // Cập nhật ảnh được chọn
+      
+        
+    },
+    
   },
   mounted() {
     this.getSanPhamById();
+    this.$nextTick(() => {
+      this.initZooming();
+    });
   },
 };
 </script>

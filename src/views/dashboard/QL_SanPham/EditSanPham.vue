@@ -105,7 +105,8 @@
                 <a-form-item label="Chọn ảnh">
                   <FileManager
                     ref="childRef"
-                    :parentId="newProductId"
+                    :SoLanHienThi="5"
+
                   />
                 </a-form-item>
               </a-col>
@@ -125,7 +126,7 @@
 </template>
 
 <script>
-import FileManager from "../../../components/FileManager/FileManager.vue";
+import FileManager from "../../../components/FileManager/FileManagerHienThi.vue";
 import appConfig from "../../../../app.config";
 import APIService from "@/helpers/ApiService";
 import PageHeader from "@/components/page-header";
@@ -225,39 +226,34 @@ export default {
   },
   methods:{
     async onSubmit() {
-      try{
-        APIService.post("SanPham/Create", this.sanpham)
-        .then(response =>{
-          console.log(response.data.data.id)
-          this.newProductId = response.data.data.id
-          toast.success("Thêm sản phẩm thành công", {
-            theme: "colored",
-            autoClose: 2000,
-          });
-        })}catch(e){
+      try {
+        await APIService.put("SanPham/edit/" + this.sanpham.id, this.sanpham);
+        this.$refs.childRef.handleUpload(this.sanpham.id);
+        toast.success("Chỉnh sửa sản phẩm thành công.", {
+          "theme": "colored",
+          autoClose: 2000
+        });
+
+      } catch (e) {
         this.submitted = false;
-        this.isLoading = false;
-        if (e.response && e.response.status === 400 && e.response.data.errors) {
-          const { errors } = e.response.data;
-          // Xử lý lỗi cụ thể
-          if (errors.noiBat) {
-            toast.error(errors.noiBat[0], {
-              theme: "colored",
-              autoClose: 2000,
-            });
-          }
-          if (errors.tintuc) {
-            toast.error(errors.tintuc[0], {
-              theme: "colored",
-              autoClose: 2000,
-            });
-          }
-        } else {
-          console.error('Lỗi không xác định:', e);
-          toast.error("Có lỗi xảy ra. Vui lòng thử lại sau.", {
-            theme: "colored",
-            autoClose: 2000,
+        if(e.status == 401){
+          toast.error("Bạn không có quyền truy cập.",{
+            "theme": "colored",
+            autoClose: 2000
           });
+        }else {
+          if(e.data && e.data.Message){
+            this.errMessage = e.data.Message;
+            toast.error(e.data.Message,{
+              "theme": "colored",
+              autoClose: 2000
+            });
+          }else{
+            toast.error("Chỉnh sửa sản phẩm thất bại. Vui lòng thử lại sau.",{
+              "theme": "colored",
+              autoClose: 2000
+            });
+          }
         }
       }
       
@@ -295,7 +291,24 @@ export default {
         };
         this.lstNhomDoTuoi.push(nhomDoTuoiItem);
       }
-    }
+    },
+    async getSanPhamById(){
+    var paramId = this.$route.params.id;
+    console.log('id', paramId)
+    APIService.get("SanPham/"+ paramId)
+    .then(response => {
+      console.log(response)
+      this.sanpham = response.data.objInfo;
+      console.log('sp', this.sanpham)
+      console.log('sp', this.sanpham.tenSach)
+      this.$refs.childRef.getFile(this.sanpham.id);
+      this.lstAnh = response.data.anhSanPham;
+      console.log('anh', this.lstAnh)
+      })
+    .catch(error=>{
+      console.log(error)
+    })
+    },
   },
   watch:{
     newProductId: function(newVal, oldVal) {
@@ -315,7 +328,7 @@ export default {
     this.getNhomDoTuoi();
   },
   mounted(){
-    
+    this.getSanPhamById()
     }
   
   

@@ -1,6 +1,6 @@
 <template>
   <router-view></router-view>
-  <ChatBox></ChatBox>
+  <!-- <ChatBox></ChatBox> -->
 </template>
 
 <script>

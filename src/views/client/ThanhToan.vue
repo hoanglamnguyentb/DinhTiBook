@@ -38,7 +38,7 @@
                       v-model:value="ThongTinKH.Tinh" 
                       placeholder="Tỉnh/Thành phố"
                       :options="Tinh"
-                      :field-names="{ label: 'name', value: 'codename', options: 'Tinh' }"
+                      :field-names="{ label: 'name', value: 'name', options: 'Tinh' }"
                       @change="getHuyen">
                       
                     </a-select>
@@ -49,7 +49,7 @@
                     <a-select 
                       v-model:value="ThongTinKH.Huyen" 
                       :options="Huyen"
-                      :field-names="{ label: 'name', value: 'codename', options: 'Huyen' }"
+                      :field-names="{ label: 'name', value: 'name', options: 'Huyen' }"
                       placeholder="Quận/Huyện"
                       @change="getXa">
                       
@@ -62,7 +62,7 @@
                       v-model:value="ThongTinKH.Xa" 
                       placeholder="Phường/Xã"
                       :options="Xa"
-                      :field-names="{ label: 'name', value: 'codename', options: 'Xa' }"
+                      :field-names="{ label: 'name', value: 'name', options: 'Xa' }"
                       >
                       
                     </a-select>
@@ -247,7 +247,7 @@ export default {
     },
     getHuyen(){
         if (this.ThongTinKH.Tinh) {
-            const selectedCity = this.Tinh.find(city => city.codename === this.ThongTinKH.Tinh);
+            const selectedCity = this.Tinh.find(city => city.name === this.ThongTinKH.Tinh);
             if (selectedCity ) {
             this.Huyen = selectedCity.districts;
         }
@@ -258,7 +258,7 @@ export default {
       },
       getXa(){
         if (this.ThongTinKH.Huyen) {
-            const selectedDistricts = this.Huyen.find(districts => districts.codename === this.ThongTinKH.Huyen);            
+            const selectedDistricts = this.Huyen.find(districts => districts.name === this.ThongTinKH.Huyen);            
             if (selectedDistricts ) {
             this.Xa = selectedDistricts.wards;
         }

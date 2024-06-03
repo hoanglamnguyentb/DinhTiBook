@@ -6,7 +6,7 @@
       <SimpleBar class="navbar-nav" id="navbar-nav">
         <li class="nav-item">
           <b-link class="nav-link menu-link" href="#QLTINTUC" data-bs-toggle="collapse" role="button"
-            aria-expanded="false" aria-controls="QLTINTUC">
+            aria-expanded="false" aria-controls="QLTINTUC" data-bs-parent="#navbar-nav">
             <i class="ri-dashboard-2-line"></i>
             <span data-key="t-dashboards"> Quản lý tin tức</span>
           </b-link>
@@ -61,7 +61,7 @@
       <SimpleBar class="navbar-nav" id="navbar-nav">
         <li class="nav-item">
           <b-link class="nav-link menu-link" href="#QLTINTUC" data-bs-toggle="collapse" role="button"
-            aria-expanded="false" aria-controls="QLTINTUC">
+            aria-expanded="false" aria-controls="QLTINTUC" data-bs-parent="#navbar-nav">
             <i class="ri-dashboard-2-line"></i>
             <span data-key="t-dashboards"> Quản lý tin tức</span>
           </b-link>
@@ -69,7 +69,7 @@
             <ul class="nav nav-sm flex-column">
               <li class="nav-item">
                 <router-link to="/dashboard/tin-tuc" class="nav-link custom-abc">
-                  Danh sách tin
+                  Danh sách tin1
                 </router-link>
               </li>
             </ul>
@@ -188,6 +188,7 @@
 
     </template>
   </b-container>
+  
 </template>
 <script>
 import {

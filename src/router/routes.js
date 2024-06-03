@@ -52,12 +52,21 @@ export default [
   //Client
   {
     path: '/tin-tuc/:id',
-    name: 'TinTucClient',
+    name: 'ChiTietTinTucClient',
     meta: {
       title: 'Đinh Tị Books',
       authRequired: false,
     },
     component: () => import('@/views/client/ChiTietTinTuc'),
+  },
+  {
+    path: '/tin-tuc',
+    name: 'TinTucClient',
+    meta: {
+      title: 'Đinh Tị Books',
+      authRequired: false,
+    },
+    component: () => import('@/views/client/TinTuc'),
   },
   {
     path: '/tat-ca-san-pham',
@@ -536,6 +545,24 @@ export default [
           authRequired: true,
         },
         component: () => import('@/views/dashboard/QL_SanPham/DetailSanPham'),
+      },
+      {
+        path: '/dashboard/don-hang/',
+        name: 'QL_DonHang',
+        meta: {
+          title: 'Danh sách đơn hàng',
+          authRequired: true,
+        },
+        component: () => import('@/views/dashboard/QL_DonHang/DanhSachDonHang'),
+      },
+      {
+        path: '/dashboard/don-hang/:id',
+        name: 'QL_DonHangDetail',
+        meta: {
+          title: 'Chi tiết đơn hàng',
+          authRequired: true,
+        },
+        component: () => import('@/views/dashboard/QL_DonHang/ChiTietDonHang'),
       },
     ],
   },
