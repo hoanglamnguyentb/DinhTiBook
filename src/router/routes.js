@@ -107,7 +107,7 @@ export default [
   //Detai san pham
 
   {
-    path: '/detail/:id',
+    path: '/sach/:id',
     name: 'DetailSanPham',
     meta: {
       title: 'Chi tiết sản phẩm',
@@ -451,7 +451,7 @@ export default [
         },
         component: () => import('@/views/dashboard/QL_TinTuc/Create'),
       },
-      
+
       {
         path: '/dashboard/QL_HoGiaDinh',
         name: 'QL_HoGiaDinh',
@@ -487,8 +487,7 @@ export default [
           title: 'Sửa sản phẩm',
           authRequired: true,
         },
-        component: () =>
-          import('@/views/dashboard/QL_SanPham/EditSanPham'),
+        component: () => import('@/views/dashboard/QL_SanPham/EditSanPham'),
       },
       {
         path: '/dashboard/QL_SanPham',
