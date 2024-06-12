@@ -33,7 +33,11 @@ const store = createStore({
       },
 
     updateCart(state,payload){
-      state.cart.find(o => o.id == payload.products.id).quantity = payload.products.quantity;
+      console.log('looo', payload)
+      console.log('ppp', state.cart)
+   
+      state.cart.find(o => o.id === payload.products.id).quantity = payload.products.quantity;
+      
       state.cartTotal = state.cart.reduce((accumlator, object)=>{
         return parseFloat(accumlator) + parseFloat(object.giaTien*object.quantity);
       },0);
@@ -45,6 +49,7 @@ const store = createStore({
         if(payload.Add){
           state.cart.push(payload.products);
         }
+        console.log(state.cart)
         state.cartTotal = state.cart.reduce((accumlator, object)=>{
           return parseFloat(accumlator) + parseFloat(object.giaTien * object.quantity);
         },0);
@@ -52,10 +57,10 @@ const store = createStore({
         localStorage.setItem('cart',JSON.stringify(state.cart));
       },
       updateCart1(state, payload){
-        state.cart.find(o => o.id == payload.products.id).qty += payload.newQty;
+        state.cart.find(o => o.id == payload.products.id).quantity += payload.newQty;
           
         state.cartTotal = state.cart.reduce((accumlator, object)=>{
-          return parseFloat(accumlator) + parseFloat(object.Price * object.qty);
+          return parseFloat(accumlator) + parseFloat(object.Price * object.quantity);
         },0);
         localStorage.setItem('cartTotal',JSON.stringify(state.cartTotal));
         localStorage.setItem('cart',JSON.stringify(state.cart));
@@ -63,6 +68,8 @@ const store = createStore({
       clearCart(state){
         state.cart = [];
         state.cartTotal = 0;
+        localStorage.setItem('cartTotal',JSON.stringify(state.cartTotal));
+        localStorage.setItem('cart',JSON.stringify(state.cart));
       },
       CapNhatCart(state, payload) {
         const product = state.cart.find(o => o.id === payload.products.id);

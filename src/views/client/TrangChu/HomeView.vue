@@ -3,15 +3,17 @@
   <div id="main" style="background-color: white">
     <div class="slideshow">
       <a-carousel autoplay>
-        <!-- <div v-for="item in 4" :key="item">
-          <img :src="getImgUrl(item - 1)" />
-        </div> -->
-        <!-- <div v-for="item in banner" :key="item">
-          <img :src= item.src  />
-        </div> -->
-        <img src="../../../assets/banner/banner1.webp" alt="" />
-        <img src="../../../assets/banner/banner2.webp" alt="" />
+        <div v-for="(item, index) in lstBanner" :key="index" >
+          <img  :src=" this.URL +item.path" />
+        </div>
       </a-carousel>
+      <!-- <div class="owl-carousel slide-banner owl-theme">
+            <div v-for="(item, index) in lstBanner" :key="index" class="item">
+              <a class="a_img" href="">
+                <img :src=" this.URL +item.path" />
+              </a>
+            </div>
+          </div> -->
     </div>
     <div class="strengths" style="margin-top: 50px">
       <div class="container">
@@ -132,109 +134,37 @@
       <div class="bg-book-by-type">
         <div class="container">
           <p class="title-box">Sản phẩm</p>
-          <!-- <ul class="nav nav-tabs" role="tablist">
-            <li class="nav-item">
-              <a class="nav-link active" href="">
-                <img src="../../../assets/images/icon-sachbanchay.webp" alt="">
-                Sách bán chạy
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link " href="">
-                <img src="../../../assets/images/icon-sachmoi.webp" alt="">
-                Sách mới
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link " href="">
-                <img src="../../../assets/images/icon-sachhay.webp" alt="">
-                Sách khuyên đọc
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link " href="">
-                <img src="../../../assets/images/icon-combosach.webp" alt="">
-                Combo sách hot
-              </a>
-            </li>
-          </ul> -->
-
-          <a-tabs v-model:activeKey="activeKey">
-            <a-tab-pane key="1">
-              <template #tab>
-                <div class="tab-pane">
-                  <img
-                    src="../../../assets/images/icon-sachbanchay.webp"
-                    alt=""
-                  />
-                  Sách bán chạy
-                </div>
-              </template>
-
-              <div class="list-product">
+          <div style="flex-wrap: wrap; " class="list-product">
                 <div
                   v-for="(item, index) in firstFiveItems"
                   :key="index"
                   class="item"
+                  style="width: 214px;"
                 >
-                  <a class="img_box" :href="`/detail/` + item.id">
+                  <a class="img_box" :href="`/sach/` + item.slug">
                     <img
                       :src="URL + item.pathAnh"
                       style="width: 198px; height: 216px"
                       alt=""
                     />
                   </a>
-                  <a class="name" href="">{{ item.tenSach }}</a>
+
+                  <a class="name" :href="`/sach/` + item.slug">{{ item.tenSach }}</a>
                   <p class="price">
                     Giá:
                     <span class="red">{{
-                      item.giaTien - (item.giaTien / 100) * item.giamGia
+                      formatCurrency(
+                        item.giaTien - (item.giaTien / 100) * item.giamGia
+                      )
                     }}</span>
-                    <strike class="normal">{{ item.giaTien }} </strike>
+                    <strike class="normal">{{ formatCurrency(item.giaTien) }}</strike>
                   </p>
                   <span class="discount"> -{{ item.giamGia }}%</span>
                 </div>
               </div>
               <div class="button-xemthem">
-                <a href="">Xem thêm</a>
+                <a href="/tim-kiem">Xem thêm</a>
               </div>
-            </a-tab-pane>
-
-            <a-tab-pane key="2">
-              <template #tab>
-                <div class="tab-pane">
-                  <img src="../../../assets/images/icon-sachmoi.webp" alt="" />
-                  Sách mới
-                </div>
-              </template>
-              Tab 2
-            </a-tab-pane>
-
-            <a-tab-pane key="3">
-              <template #tab>
-                <div class="tab-pane">
-                  <img src="../../../assets/images/icon-sachhay.webp" alt="" />
-                  Sách khuyên đọc
-                </div>
-              </template>
-              Tab 3
-            </a-tab-pane>
-
-            <a-tab-pane key="4">
-              <template #tab>
-                <div class="tab-pane">
-                  <img
-                    src="../../../assets/images/icon-combosach.webp"
-                    alt=""
-                  />
-                  Combo sách hot
-                </div>
-              </template>
-              Tab 4
-            </a-tab-pane>
-          </a-tabs>
-
-          <div class="tab-content"></div>
         </div>
       </div>
     </div>
@@ -251,17 +181,17 @@
                     src="../../../assets/images/icon-sachbanchay.webp"
                     alt=""
                   />
-                  Sách bán chạy
+                  Sách nổi bật
                 </div>
               </template>
 
               <div class="list-product">
                 <div
-                  v-for="(item, index) in firstFiveItems"
+                  v-for="(item, index) in firstFiveItemsNoiBat"
                   :key="index"
                   class="item"
                 >
-                  <a class="img_box" href="/detail">
+                  <a class="img_box" :href="`/sach/` + item.slug">
                     <img
                       :src="URL + item.pathAnh"
                       style="width: 198px; height: 216px"
@@ -269,19 +199,21 @@
                     />
                   </a>
 
-                  <a class="name" href="/detail">{{ item.tenSach }}</a>
+                  <a class="name" :href="`/sach/` + item.slug">{{ item.tenSach }}</a>
                   <p class="price">
                     Giá:
                     <span class="red">{{
-                      item.giaTien - (item.giaTien / 100) * item.giamGia
+                      formatCurrency(
+                        item.giaTien - (item.giaTien / 100) * item.giamGia
+                      )
                     }}</span>
-                    <strike class="normal">{{ item.giaTien }} </strike>
+                    <strike class="normal">{{ formatCurrency(item.giaTien) }}</strike>
                   </p>
                   <span class="discount"> -{{ item.giamGia }}%</span>
                 </div>
               </div>
               <div class="button-xemthem">
-                <a href="/detail">Xem thêm</a>
+                <a href="/sach-noi-bat">Xem thêm</a>
               </div>
             </a-tab-pane>
 
@@ -289,34 +221,42 @@
               <template #tab>
                 <div class="tab-pane">
                   <img src="../../../assets/images/icon-sachmoi.webp" alt="" />
-                  Sách mới
-                </div>
-              </template>
-              Tab 2
-            </a-tab-pane>
-
-            <a-tab-pane key="3">
-              <template #tab>
-                <div class="tab-pane">
-                  <img src="../../../assets/images/icon-sachhay.webp" alt="" />
                   Sách khuyên đọc
                 </div>
               </template>
-              Tab 3
+              <div class="list-product">
+                <div
+                  v-for="(item, index) in firstFiveItemsKhuyenDoc"
+                  :key="index"
+                  class="item"
+                >
+                  <a class="img_box" :href="`/sach/` + item.slug">
+                    <img
+                      :src="URL + item.pathAnh"
+                      style="width: 198px; height: 216px"
+                      alt=""
+                    />
+                  </a>
+
+                  <a class="name" :href="`/sach/` + item.slug">{{ item.tenSach }}</a>
+                  <p class="price">
+                    Giá:
+                    <span class="red">{{
+                      formatCurrency(
+                        item.giaTien - (item.giaTien / 100) * item.giamGia
+                      )
+                    }}</span>
+                    <strike class="normal">{{ formatCurrency(item.giaTien) }}</strike>
+                  </p>
+                  <span class="discount"> -{{ item.giamGia }}%</span>
+                </div>
+              </div>
+              <div class="button-xemthem">
+                <a href="/sach-khuyen-doc">Xem thêm</a>
+              </div>
             </a-tab-pane>
 
-            <a-tab-pane key="4">
-              <template #tab>
-                <div class="tab-pane">
-                  <img
-                    src="../../../assets/images/icon-combosach.webp"
-                    alt=""
-                  />
-                  Combo sách hot
-                </div>
-              </template>
-              Tab 4
-            </a-tab-pane>
+            
           </a-tabs>
         </div>
       </div>
@@ -329,29 +269,31 @@
           Dưới đây là các Tác giả - Dịch giả - Họa sĩ đã xuất bản sách tại Đinh
           Tị Books
         </h4>
-        <div class="owl-carousel slide-tacgia owl-theme">
-          <div class="item">
+        
+        <div class="owl-carousel slide-tacgia owl-theme" >
+          
+          <div  v-for="(item, index) in lstTacGia" :key="index">
+            <div class="item">
+            
             <div class="img_box">
               <img
-                src="https://dinhtibooks.com.vn/images/products/author/2022/08/resized/tac-gia-carol-vorderman_1660017784.webp"
+                :src="this.URL+item.pathAnh"
                 alt=""
               />
             </div>
             <div class="text">
-              <p class="name">TÁC GIẢ CAROL VORDERMAN</p>
+              <p class="name">{{ item.thongTin1 }}</p>
               <div class="summary">
                 <p style="text-align: justify">
-                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                  Fugiat eveniet repellat, ratione expedita perferendis autem.
-                  Debitis, dolor rem? Vitae optio quia asperiores alias unde
-                  molestiae mollitia laboriosam doloremque repudiandae eum
-                  aspernatur laudantium facilis ipsum fugit esse repellendus
-                  fuga modi perferendis quam magnam repellat, odio itaque?
-                  Expedita rem officia nisi magnam?
+                  {{ item.thongTin2 }}
                 </p>
               </div>
             </div>
+          
           </div>
+          </div>
+          
+         
         </div>
       </div>
     </div>
@@ -362,7 +304,7 @@
         style="background-color: #f2f2f2; padding-bottom: 42px"
         class="customer"
       >
-        <div class="container">
+        <div  class="container">
           <div class="top">
             <p class="title_why_2">Khách hàng nói về chúng tôi</p>
             <p class="summary">
@@ -371,15 +313,11 @@
             </p>
           </div>
           <div class="owl-carousel slide-khachhang owl-theme">
-            <div style="margin-right: 20px" class="item">
+            <div  v-for="(item, index) in lstKhachHang" :key="index" style="margin-right: 20px" class="item">
               <div class="content">
                 <p>
                   <span style="font-size: 16px"
-                    >“Là đại lý bán lẻ lâu năm trên phố sách Đinh Lễ nên chúng
-                    tôi thật sự cần những cuốn sách mới, chất lượng khác biệt
-                    với mặt bằng chung. Thật may mắn, Đinh Tị Books là đơn vị
-                    luôn đáp ứng những tiêu chí đó. Chúng tôi rất hài lòng về
-                    sản phẩm của Đinh Tị trong hơn 10 năm hợp tác”.</span
+                    >{{ item.thongTin2 }}</span
                   >
                 </p>
               </div>
@@ -387,14 +325,14 @@
                 <a href="#" class="a_img left">
                   <!-- <img width="100%" height="232px" src="images/customer/2022/06/17/resized/vlcsnap-2022-06-17-15h57m11s818_1655457497.webp" alt=""> -->
                   <img
-                    src="https://dinhtibooks.com.vn/images/customer/2022/06/17/resized/vlcsnap-2022-06-17-15h57m11s818_1655457497.webp"
+                    :src="this.URL + item.pathAnh"
                     alt=""
                   />
                 </a>
                 <div style="margin-left: 20px; display: block" class="right">
-                  <p class="name">Chủ nhà sách Ngân Nga</p>
+                  <p class="name">{{ item.thongTin1 }}</p>
                   <p class="summary">
-                    Chia sẻ của Chị Sâm - Chủ nhà sách Ngân Nga, số 7 Đinh Lễ
+                    {{ item.thongTin3 }}
                   </p>
                 </div>
               </div>
@@ -412,12 +350,12 @@
           <div class="list_new">
             <div v-for="(item, index) in TinTuc" :key="index" class="new_list">
               <div class="img">
-                <a href="">
+                <a :href="`/tin-tuc/chi-tiet/`+ item.id">
                   <img :src="URL + item.hinhAnh" alt="" />
                 </a>
               </div>
               <div class="content">
-                <a href="">{{ item.tieuDe }}</a>
+                <a :href="`/tin-tuc/chi-tiet/`+ item.id">{{ item.tieuDe }}</a>
               </div>
             </div>
           </div>
@@ -446,16 +384,20 @@
   </div>
 
   <FooterClient></FooterClient>
+  <ChatBox></ChatBox>
 </template>
 
 <script>
+import ChatBox from '@/components/ChatBox';
 import Header from '@/components/Header';
 import FooterClient from '@/components/FooterClient.vue';
 import APIService from '@/helpers/ApiService';
+import Common from '@/helpers/Common';
 export default {
   components: {
     Header,
     FooterClient,
+    ChatBox
   },
   data() {
     return {
@@ -473,60 +415,13 @@ export default {
         },
       ],
       activeKey: '1',
+      activeKey1: '1',
       URL: 'http://localhost:44301/',
-
-      SanPham: [
-        {
-          pathAnh: 'Uploads/FileManager\\bachkhoathu_20240503231520712.webp',
-          tenSach: 'sách 1',
-          giaTien: 350000,
-          giamGia: 20,
-        },
-        {
-          pathAnh: 'Uploads/FileManager\\bachkhoathu_20240503231520712.webp',
-          tenSach: 'sách 2',
-          giaTien: 350000,
-          giamGia: 20,
-        },
-        {
-          pathAnh: 'Uploads/FileManager\\bachkhoathu_20240503231520712.webp',
-          tenSach: 'sách 3fh ',
-          giaTien: 350000,
-          giamGia: 20,
-        },
-        {
-          pathAnh: 'Uploads/FileManager\\bachkhoathu_20240503231520712.webp',
-          tenSach: 'sách 4 dfgdfg',
-          giaTien: 350000,
-          giamGia: 20,
-        },
-        {
-          pathAnh: 'Uploads/FileManager\\bachkhoathu_20240503231520712.webp',
-          tenSach: 'sách 5',
-          giaTien: 350000,
-          giamGia: 20,
-        },
-        {
-          pathAnh: 'Uploads/FileManager\\bachkhoathu_20240503231520712.webp',
-          tenSach: 'sách 6',
-          giaTien: 350000,
-          giamGia: 20,
-        },
-        {
-          pathAnh: 'Uploads/FileManager\\bachkhoathu_20240503231520712.webp',
-          tenSach: 'sách 7',
-          giaTien: 350000,
-          giamGia: 20,
-        },
-        {
-          pathAnh: 'Uploads/FileManager\\bachkhoathu_20240503231520712.webp',
-          tenSach: 'sách 8',
-          giaTien: 350000,
-          giamGia: 20,
-        },
-      ],
+     
       lstSanPham: [],
+      lstSanPhamNoiBat:[],
       TinTuc: [],
+      lstSanPhamKhuyenDoc:[],
       DoiTac: [
         {
           src: 'https://dinhtibooks.com.vn/images/partner/2022/05/09/resized/nuoc-ngoai-3_1652069117.webp',
@@ -550,16 +445,43 @@ export default {
           src: 'https://dinhtibooks.com.vn/images/partner/2022/05/09/resized/nuoc-ngoai-1_1652069090.webp',
         },
       ],
+      lstBanner:[],
+      lstTacGia:[],
+      lstKhachHang:[]
     };
   },
   created() {
-    var result = APIService.get('/TinTuc')
+    var result = APIService.get('/TinTuc?TypeFilter=TINTUC')
       .then((result) => {
         this.TinTuc = result.data.data.items.slice(0, 5);
       })
       .catch((err) => {});
+      
   },
   methods: {
+    formatCurrency(x) {
+      return Common.formatCurrency(x);
+    },
+    async getTacGia(){
+      var result = await APIService.get("TTSlide?typeFilter=TACGIA");
+      if (result != null ) {
+        this.lstTacGia = result.data.data.items;
+        console.log('tacgia', this.lstTacGia)
+      }
+    },
+    async getKhachHang(){
+      var result = await APIService.get("TTSlide?typeFilter=KHACHHANG");
+      if (result != null ) {
+        this.lstKhachHang = result.data.data.items;
+ 
+      }
+    },
+    async getBanner(){
+      var result = await APIService.get("QLSlide/GetByType?Type=BANNER"); 
+      if (result.data.data != null ) {
+        this.lstBanner = result.data.data;
+      }
+    },
     getImgUrl(i) {
       return `${this.baseUrl}abstract0${i + 1}.jpg`;
     },
@@ -567,6 +489,26 @@ export default {
       var result = await APIService.get('/SanPham');
       if (result.data.data != null && result.data.data.items != null) {
         this.lstSanPham = result.data.data.items;
+      }
+    },
+    async getSanPhamNoiBat(){
+      var searchParam = {
+        isNoiBatFilter: true,
+      };
+      var urlQuery = new URLSearchParams(searchParam).toString();
+      var result = await APIService.get("/SanPham?" + urlQuery);
+      if (result.data.data != null && result.data.data.items != null) {
+        this.lstSanPhamNoiBat = result.data.data.items;
+      }
+    },
+    async getSanPhamKhuyenDoc(){
+      var searchParam = {
+        isKhuyenDocFilter: true,
+      };
+      var urlQuery = new URLSearchParams(searchParam).toString();
+      var result = await APIService.get("/SanPham?" + urlQuery);
+      if (result.data.data != null && result.data.data.items != null) {
+        this.lstSanPhamKhuyenDoc = result.data.data.items;
       }
     },
     async getNXB() {
@@ -582,8 +524,58 @@ export default {
       }
     },
   },
+  watch: {
+  lstTacGia(newVal, oldVal) {
+    this.$nextTick(function() {
+      $(".slide-tacgia").owlCarousel('destroy'); // Hủy bỏ khởi tạo cũ (nếu có)
+      $(".slide-tacgia").owlCarousel({
+        loop: true,
+        margin: 10,
+        nav: false,
+        dots: false,
+        autoplay: true,
+        responsive: {
+          0: {
+            items: 1
+          },
+          600: {
+            items: 2
+          },
+          1000: {
+            items: 2
+          }
+        }
+      });
+    });
+  },
+  lstKhachHang(newVal, oldVal) {
+    this.$nextTick(function() {
+      $(".slide-khachhang").owlCarousel('destroy'); // Hủy bỏ khởi tạo cũ (nếu có)
+      $(".slide-khachhang").owlCarousel({
+        loop: true,
+        margin: 10,
+        nav: false,
+        dots: false,
+        autoplay: true,
+        responsive: {
+          0: {
+            items: 1
+          },
+          600: {
+            items: 2
+          },
+          1000: {
+            items: 2
+          }
+        }
+      });
+    });
+  }
+},
   mounted() {
-    $('.slide-tacgia').owlCarousel({
+   this.getKhachHang()
+    this.getBanner();
+    $('.slide-banner').owlCarousel({
       loop: true,
       margin: 10,
       nav: false,
@@ -597,7 +589,34 @@ export default {
           items: 1,
         },
         1000: {
-          items: 2,
+          items: 1,
+        },
+      },
+    });
+    $('.slide-tacgia').owlCarousel({
+      loop: true,
+      margin: 10,
+      nav: false,
+      dots: false,
+      autoplay: true,
+      items:1
+    });
+    this.getTacGia();
+    $('.slide-doitac').owlCarousel({
+      loop: true,
+      margin: 10,
+      nav: false,
+      dots: false,
+      autoplay: false,
+      responsive: {
+        0: {
+          items: 1,
+        },
+        600: {
+          items: 3,
+        },
+        1000: {
+          items: 6,
         },
       },
     });
@@ -619,30 +638,22 @@ export default {
         },
       },
     });
-    $('.slide-doitac').owlCarousel({
-      loop: true,
-      margin: 10,
-      nav: false,
-      dots: false,
-      autoplay: false,
-      responsive: {
-        0: {
-          items: 1,
-        },
-        600: {
-          items: 3,
-        },
-        1000: {
-          items: 6,
-        },
-      },
-    });
-    this.getImgUrl(), this.getSanPham();
+    this.getImgUrl(), 
+    this.getSanPham();
+    this.getSanPhamNoiBat();
+    this.getSanPhamKhuyenDoc();
+    
   },
   computed: {
     firstFiveItems() {
-      return this.lstSanPham.slice(0, 5);
+      return this.lstSanPham.slice(0, 10);
     },
+    firstFiveItemsNoiBat(){
+      return this.lstSanPhamNoiBat.slice(0, 5);
+    },
+    firstFiveItemsKhuyenDoc(){
+      return this.lstSanPhamKhuyenDoc.slice(0, 5);
+    }
   },
 };
 </script>
@@ -1028,6 +1039,8 @@ export default {
 }
 .customer .item .content {
   position: relative;
+  display: -webkit-box;
+  height: 120px;
 }
 .customer .item .content p {
   margin: 0px;

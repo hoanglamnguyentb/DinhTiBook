@@ -23,7 +23,7 @@
               <div style="margin-left: 15px; margin-top: 15px" class="User">
                 <a-button @click="openUser"
                   ><i style="margin-right: 10px" class="ri-user-line"></i
-                  >SƠn</a-button
+                  >{{fullName }}</a-button
                 >
                 <!-- <form v-if="isUserOpen" class="thongtin" name="thongtin" id="thongtin">
                   
@@ -34,7 +34,10 @@
 
                 <ul v-if="isUserOpen" class="thongtin" id="thongtin">
                   <li class="sub-menu-level1">
-                    <a href="">Đơn hàng của tôi</a>
+                    <a href="/profile">Thông tin tài khoản</a>
+                  </li>
+                  <li class="sub-menu-level1">
+                    <a href="/don-hang">Đơn hàng của tôi</a>
                   </li>
                   <li class="sub-menu-level1">
                     <a @click="DangXuat">Đăng xuất</a>
@@ -53,7 +56,7 @@
           <div id="cssmenu">
             <ul id="megamenu">
               <li class="level_0 sort" style="font-size: 16px">
-                <a href=""><i class="ri-home-4-line"></i></a>
+                <a href="/"><i class="ri-home-4-line"></i></a>
               </li>
               <li class="level_0 sort">
                 <a href=""
@@ -72,7 +75,7 @@
                 </ul>
               </li>
               <li class="level_0 sort">
-                <a href=""
+                <a style="cursor: pointer;"
                   >Sách theo độ tuổi <i class="ri-arrow-down-s-line"></i
                 ></a>
                 <ul>
@@ -91,23 +94,23 @@
                 <a href="/tat-ca-san-pham">Chọn sách <i class="ri-arrow-down-s-line"></i></a>
                 <ul>
                   <li class="sub-menu-level1">
-                    <a href="">Sách nổi bật</a>
+                    <a href="/sach-noi-bat">Sách nổi bật</a>
                   </li>
                   <li class="sub-menu-level1">
-                    <a href="">Sách khuyên đọc</a>
+                    <a href="/sach-khuyen-doc">Sách khuyên đọc</a>
                   </li>
                 </ul>
               </li>
               <li class="level_0 sort">
-                <a href="">Tin tức <i class="ri-arrow-down-s-line"></i></a>
+                <a :href="`/tin-tuc/TINTUC`">Tin tức </a>
               </li>
               <li class="level_0 sort">
-                <a href="">Làm cha mẹ <i class="ri-arrow-down-s-line"></i></a>
+                <a href="/tin-tuc/LAMCHAME">Làm cha mẹ </a>
               </li>
               <li class="level_0 sort">
-                <a href="">Tiện ích <i class="ri-arrow-down-s-line"></i></a>
+                <a href="/tin-tuc/TIENICH">Tiện ích </a>
               </li>
-              <li class="level_0 sort"><a href="">Review sách </a></li>
+              <li class="level_0 sort"><a href="/tin-tuc/REVIEW">Review sách </a></li>
             </ul>
           </div>
           <div class="right">
@@ -190,6 +193,7 @@ export default {
       keyword: '',
       URL: 'http://localhost:44301/',
       lstSanPham: [],
+      fullName: localStorage.getItem('FullName') || 'Xin chào bạn'
     };
   },
   methods: {
@@ -201,11 +205,15 @@ export default {
       this.isUserOpen = !this.isUserOpen;
     },
     DangXuat() {
-      console.log('dang xuaats');
+      router.push('/');
       localStorage.removeItem('accessTokenClient');
       localStorage.removeItem('userClient');
+      localStorage.removeItem('FullName');
+      localStorage.removeItem('UserId');
       this.isLoggedIn = false;
-      window.location.reload();
+     
+      this.$router.go(0);
+      
     },
     openGioHang() {
       router.push('/gio-hang');

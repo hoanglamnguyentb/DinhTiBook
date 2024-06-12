@@ -2,13 +2,13 @@
   <PageHeader :title="title" :items="items" />
   <a-row>
     <a-col :span="24">
-      <a-card title="Danh sách banner">
+      <a-card title="Danh sách slide khách hàng">
         <template #extra>
           <a-button @click="openModalAdd" type="primary">Thêm mới</a-button>
         </template>
         <div>
-          <!-- <a-row style="margin-bottom: 20px" :gutter="24">
-            <a-col :span="12">
+          <a-row style="margin-bottom: 20px" :gutter="24">
+            <!-- <a-col :span="12">
               <a-input
                 v-model:value="formSearch.TenNXBFilter"
                 @keyup.enter="SearchData"
@@ -21,12 +21,12 @@
             </a-col>
             <a-col :span="4">
               <a-button type="primary"  @click="SearchData"><i class="ri-equalizer-fill me-2 align-bottom"></i>Tìm kiếm</a-button>
-            </a-col>
-          </a-row> -->
+            </a-col> -->
+          </a-row>
           <div>
             <a-table
                 :columns="tableColumns"
-                :dataSource="lstBanner"
+                :dataSource="lstSlideTacGia"
                 :pagination="false"
                 :loading="loading">
                 <template #bodyCell="{ column, index, record }">
@@ -36,15 +36,30 @@
                       </ul>
                     </template>
                     <template v-if="column.key === 'hinhAnh'">
-                      <!-- <a :href="this.URL+ record.path" target="_blank">Xem hình ảnh</a> -->
-                      <a :href="this.URL+ record.path" target="_blank">
-                        <img :src="this.URL+ record.path" alt="Hình ảnh" style="height:100px; ">
-                      </a>
-                      
-                    </template>
+                          <!-- <a :href="this.URL+ record.path" target="_blank">Xem hình ảnh</a> -->
+                          <a :href="this.URL+ record.pathAnh" target="_blank">
+                            <img :src="this.URL+ record.pathAnh" alt="Hình ảnh" style="height:100px; ">
+                          </a>
+                          
+                        </template>
                     <template v-if="column.key === 'action'">
                       <ul class="list-inline hstack gap-2 mb-0">
-                     
+                       
+                        <li
+                          class="list-inline-item edit"
+                          data-bs-toggle="tooltip"
+                          data-bs-trigger="hover"
+                          data-bs-placement="top"
+                          title="Chỉnh sửa"
+                        >
+                          <b-link
+                            variant="text-primary"
+                            class="d-inline-block edit-item-btn"
+                            @click="openModalEdit(record.id)"
+                            >
+                            <i class="ri-pencil-fill fs-16"></i>
+                          </b-link>
+                        </li>
                         <li>
                         <a
                           href="#"
@@ -68,11 +83,10 @@
       </a-card>
     </a-col>
   </a-row>
-
-  <ModalAddBanner
-    @addSuccess="loadData()"
-    ref="modalAddBanner">
-  </ModalAddBanner>
+  <ModalAdd
+    @addSuccess="loadData(optionPage.pageIndex, optionPage.pageSize)"
+    ref="modalAdd">
+  ></ModalAdd>
 </template>
 
 <script>
@@ -80,42 +94,42 @@ import Pagination from "../../../../components/widgets/Pagination.vue";
 import PageHeader from "@/components/page-header";
 import appConfig from "../../../../../app.config";
 import APIService from "@/helpers/ApiService";
-import ModalAddBanner from "./ModalAddBanner.vue";
+import ModalAdd from "./ModalAdd.vue";
 import Swal from "sweetalert2";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 export default {
   page: {
-    title: "Quản lý banner",
+    title: "Quản lý slide khách hàng",
     meta: [
       {
-        name: "Danh sách banner",
+        name: "Danh sách slide khách hàng",
         content: appConfig.description,
       },
     ],
-    
   },
   data() {
     return {
-      title: "Quản lý banner",
+      title: "Quản lý slide khách hàng",
       items: [
         {
           text: "Dashboard",
           href: "/",
         },
         {
-          text: "Quản lý banner",
+          text: "Quản lý  slide khách hàng",
           active: true,
         },
       ],
       tableColumns: [
-        { title: "STT", width: 100, key: "STT" },
-        { title: "Tên banner", dataIndex: "tenBanner", width:300},
-        { title: "Hình ảnh", key: "hinhAnh" },
-        { title: "Thao tác",key: "action", width: 200}
+        { title: "STT", width: 80, key: "STT" },
+        { title: "Tên tác giả", dataIndex: "thongTin1", width:250},
+        { title: "Hình ảnh", key: "hinhAnh", width:180 },
+        { title: "Mô tả", dataIndex: "thongTin2" },
+        { title: "Thao tác",key: "action", width: 120}
       ],
       pages: [],
-      lstBanner: [],
+      lstSlideTacGia: [],
       optionPage: {
         pageIndex: 1,
         pageSize: 20,
@@ -133,7 +147,6 @@ export default {
       return (user = JSON.parse(localStorage.getItem("user")));
     },
     deletedata(event) {
-      
       Swal.fire({
         title: "Đồng ý xóa dữ liệu",
         text: "Sau khi xóa sẽ không thể khôi phục lại.",
@@ -146,9 +159,8 @@ export default {
       }).then(async (result) => {
         if (result.value) {
           try {
-          
             //xóa trên database
-            await APIService.delete("/QLSlide/delete?IDItem="+ event.id);
+            await APIService.delete("/TTSlide/delete/" + event.id);
             toast.success("Xóa thành công.", {
               theme: "colored",
               autoClose: 2000,
@@ -194,27 +206,39 @@ export default {
       this.optionPage.pageIndex = page;
       this.loadData(this.optionPage.pageIndex, this.optionPage.pageSize);
     },
-    async loadData() {
-      
-      var result = await APIService.get("/QLSlide/GetByType?Type=BANNER");
-     
-      this.lstBanner = result.data.data;
-      
+    async loadData(pageIndex, pageSize, params) {
+      var searchParam = {
+        pageIndex: pageIndex,
+        pageSize: pageSize,
+      };
+      if (params) {
+        searchParam = params;
+      }
+
+      var urlQuery = new URLSearchParams(searchParam).toString();
+      var result = await APIService.get("/TTSlide?TypeFilter=KHACHHANG&" + urlQuery);
+      this.lstSlideTacGia = result.data.data.items;
+      if (result.data.data != null && result.data.data.items != null) {
+        var res = result.data.data;
+        this.lstSlideTacGia = result.data.data.items;
+        this.optionPage.pageIndex = res.pageIndex;
+        this.optionPage.pageSize = res.pageSize;
+        this.optionPage.totalCount = res.totalCount;
+      }
     },
     openModalAdd() {
-      this.$refs.modalAddBanner.showModal();
+      this.$refs.modalAdd.showModal();
     },
-    // openModalEdit(id){
-    //   this.$refs.modalAddEditNXB.showModal(id);
-    // }
+    openModalEdit(id){
+      this.$refs.modalAddEditNXB.showModal(id);
+    }
   },
   mounted() {
-    this.loadData();
-    
+    this.loadData(this.optionPage.pageIndex, this.optionPage.pageSize);
   },
   components: {
     PageHeader,
-    ModalAddBanner,
+    ModalAdd,
     Pagination,
   },
 };

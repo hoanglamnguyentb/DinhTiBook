@@ -6,7 +6,7 @@
       v-on:click="chatBoxToggle"
     >
       <div id="chat-overlay"></div>
-      <i class="bi bi-chat-quote fs-1"></i>
+      <i style="font-size: 35px;" class="ri-message-2-line"></i>
     </div>
 
     <div class="chat-box">
@@ -14,13 +14,13 @@
         <span class="msg-avatar me-2" style="width: 50px; height: 50px">
           <img
             class="w-100 h-100"
-            src="https://cdn.eva.vn/upload/2-2023/images/2023-05-16/dau-phai-tu-nhien-ngoc-trinh-dep-vao-hau-truong-moi-biet-duoc-bi-kip-img_7829-1684233366-654-width780height1040.jpg"
+            src="https://lf16-alice-tos-sign.oceanapi-i18n.com/obj/ocean-cloud-tos-sg/FileBizType.BIZ_BOT_ICON/7371838831589868545_1716390117416036960.jpeg?lk3s=50ccb0c5&x-expires=1718037862&x-signature=4A0UbFnnSb4ExbMgN3j41zVU%2BgI%3D"
           />
         </span>
-        Đinh Tị Book Support
+        Trợ lý nhà sách
         <span class="chat-box-toggle ms-auto" v-on:click="chatBoxToggle"
-          ><i class="bi bi-x-lg"></i
-        ></span>
+          ><i style="font-size: 30px;" class="ri-close-line" ></i>
+        </span>
       </div>
       <div class="chat-box-body">
         <div class="chat-box-overlay"></div>
@@ -35,11 +35,11 @@
             <span class="msg-avatar">
               <img
                 v-if="item.type == 'self'"
-                src="https://image.plo.vn/w1000/Uploaded/2024/atymt/2024_01_04/b-ray-2-7423-8711.jpg.webp"
+                src="https://bootdey.com/img/Content/avatar/avatar7.png"
               />
               <img
                 v-else
-                src="https://cdn.eva.vn/upload/2-2023/images/2023-05-16/dau-phai-tu-nhien-ngoc-trinh-dep-vao-hau-truong-moi-biet-duoc-bi-kip-img_7829-1684233366-654-width780height1040.jpg"
+                src="https://lf16-alice-tos-sign.oceanapi-i18n.com/obj/ocean-cloud-tos-sg/FileBizType.BIZ_BOT_ICON/7371838831589868545_1716390117416036960.jpeg?lk3s=50ccb0c5&x-expires=1718037862&x-signature=4A0UbFnnSb4ExbMgN3j41zVU%2BgI%3D"
               />
             </span>
             <div class="cm-msg-text">{{ item.message }}</div>
@@ -47,7 +47,7 @@
           <div id="cm-msg-1" class="chat-msg user" v-if="isLoading">
             <span class="msg-avatar"
               ><img
-                src="https://cdn.eva.vn/upload/2-2023/images/2023-05-16/dau-phai-tu-nhien-ngoc-trinh-dep-vao-hau-truong-moi-biet-duoc-bi-kip-img_7829-1684233366-654-width780height1040.jpg"
+                src="https://lf16-alice-tos-sign.oceanapi-i18n.com/obj/ocean-cloud-tos-sg/FileBizType.BIZ_BOT_ICON/7371838831589868545_1716390117416036960.jpeg?lk3s=50ccb0c5&x-expires=1718037862&x-signature=4A0UbFnnSb4ExbMgN3j41zVU%2BgI%3D"
             /></span>
             <div class="cm-msg-text">
               <div class="lds-ellipsis">
@@ -72,7 +72,7 @@
             autocomplete="off"
           />
           <button type="submit" class="chat-submit" id="chat-submit">
-            <i class="bi bi-send fs-5"></i>
+            <i style="font-size: 25px;" class="ri-send-plane-fill"></i>
           </button>
         </form>
       </div>

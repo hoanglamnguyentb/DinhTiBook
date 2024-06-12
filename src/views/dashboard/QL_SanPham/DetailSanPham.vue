@@ -1,28 +1,29 @@
 <template>
   <PageHeader :title="title" :items="items" />
-  <a-row>
+  <a-card>
+    <a-row>
     <a-col :span="24">
       <table  v-if="SanPham" style="width: 100%;" class="border-detail">
-        <tr><td style="width: 200px;">Tên sản phẩm</td><td>{{ SanPham.tenSach }}</td></tr>
-        <tr><td style="width: 200px;">Tên tác giả</td><td>{{ SanPham.tenTacGia }}</td></tr>
-        <tr><td style="width: 200px;">Id nhà xuất bản</td><td>{{ SanPham.idNhaXuatBan }}</td></tr>
-        <tr><td style="width: 200px;">Năm xuất bản</td><td>{{ SanPham.namXuatBan }}</td></tr>
-        <tr><td style="width: 200px;">Tên tác giả</td><td>{{ SanPham.tenTacGia }}</td></tr>
-        <tr><td style="width: 200px;">Tên tác giả</td><td>{{ SanPham.tenTacGia }}</td></tr>
+        <tr><td style="width: 200px; padding: 20px;">Tên sản phẩm</td><td>{{ SanPham.tenSach }}</td></tr>
+        <tr><td style="width: 200px; padding: 20px;">Tên tác giả</td><td>{{ SanPham.tenTacGia }}</td></tr>
+        <tr><td style="width: 200px; padding: 20px;">Id nhà xuất bản</td><td>{{ SanPham.idNhaXuatBan }}</td></tr>
+        <tr><td style="width: 200px; padding: 20px;">Năm xuất bản</td><td>{{ SanPham.namXuatBan }}</td></tr>
+        <tr><td style="width: 200px; padding: 20px;">Tên tác giả</td><td>{{ SanPham.tenTacGia }}</td></tr>
+       
         <tr>
-          <td style="width: 200px;">Ảnh sản phẩm</td>
-          <td >
-            <div v-for="(item, index) in lstAnh" :key="index">
-                <img :src="'http://localhost:44301/'+item.path"/>         
+          <td style="width: 200px;  padding: 20px;">Ảnh sản phẩm</td>
+          <td style="height: 150px; display: flex;" >
+            <div style="height: 100%;" v-for="(item, index) in lstAnh" :key="index">
+                <img style="height: 100%; margin-right: 20px;" :src="'http://localhost:44301/'+item.path"/>         
             </div>
           </td>
         </tr>
         <!-- <tr><td style="width: 200px;">Mô tả</td><td>{{ SanPham.moTaSach }}</td></tr> -->
         <tr>
-          <td >Mô tả</td>
-          <td class="td-mota">
+          <td style=" padding: 20px;">Mô tả</td>
+          <td style=" padding: 20px;" class="td-mota">
             <div class="description" id="HELLO">
-              <h1>--------</h1>
+          
               <div class="description-content" v-html="SanPham.moTaSach"></div>
             </div>
           </td>
@@ -30,6 +31,8 @@
       </table>
     </a-col>
   </a-row>
+  </a-card>
+  
   
 </template>
 
@@ -76,7 +79,7 @@ export default {
     async getSanPham(){
     var paramId = this.$route.params.id;
     console.log('id', paramId)
-    APIService.get("SanPham/"+ paramId)
+    APIService.get("SanPham/GetById/"+ paramId)
     .then(response => {
       console.log(response)
       this.SanPham = response.data.objInfo;

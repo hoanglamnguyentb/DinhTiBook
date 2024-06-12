@@ -2,7 +2,7 @@
   <div>
     <a-modal v-model:open="open" title="Đổi mật khẩu" @ok="handleOk" @cancel="closeModal">
       <a-form ref="formRef" :model="matkhau" :rules="rules" layout="vertical">
-        <a-form-item ref="oldPassword" label="Mật khẩu cũ"  name="oldPassword">
+        <a-form-item ref="oldPassword" label="Mật khẩu cũ "  name="oldPassword">
           <a-input-password v-model:value="matkhau.oldPassword" />
         </a-form-item>
         <a-form-item ref="newPassword" label="Mật khẩu mới" name="newPassword">
@@ -76,7 +76,7 @@ export default {
           } 
           else {
             const data ={
-              userId :localStorage.getItem('user'),
+              userId :localStorage.getItem('userClient'),
               newPassword: this.matkhau.newPassword,
               oldPassword: this.matkhau.oldPassword
             }

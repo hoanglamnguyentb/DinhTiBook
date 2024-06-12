@@ -6,16 +6,19 @@
         <a-row :gutter="50">
           <a-col :span="16" class="left">
             <a-form
+              :rules="rules"
               :model="ThongTinKH"
               name="basic"
-              ref="formRef"
-              :rules="rules"
+              ref="formRef"             
             >
               <p style="font-size: 17px; font-weight: 600;">Thông tin giao hàng</p>
               <div class="box">
                 <a-row :gutter="[24]">
                   <a-col :span="12">
-                    <a-form-item>
+                    <a-form-item 
+                    name="TenKhachHang" 
+                    ref="TenKhachHang" 
+                    :rules="[{ required: true, message: 'Thông tin này không được để trống!' }]">
                       <a-input
                         v-model:value="ThongTinKH.TenKhachHang"
                         placeholder="Họ và tên"
@@ -23,7 +26,14 @@
                     </a-form-item>
                   </a-col>
                   <a-col :span="12">
-                    <a-form-item>
+                    <a-form-item 
+                      name="SoDienThoai"
+                      :rules="[
+                          { required: true, message: 'Thông tin này không được để trống!' },
+                          { pattern: /^\d+$/, message: 'Vui lòng chỉ nhập số!' },
+                          { min: 10, max: 10, message: 'Số điện thoại phải có 10 số', trigger: 'blur' },
+                      ]"
+                      > 
                       <a-input
                         v-model:value="ThongTinKH.SoDienThoai"
                         placeholder="Số điện thoại"
@@ -33,19 +43,25 @@
                 </a-row>
                 <a-row :gutter="[20]">
                 <a-col :span="8">
-                  <a-form-item >
+                  <a-form-item 
+                  :rules="[{ required: true, message: 'Vui lòng chọn tỉnh/thành phố!' }]"
+                  name="Tinh"
+                  >
                     <a-select 
+                     
                       v-model:value="ThongTinKH.Tinh" 
                       placeholder="Tỉnh/Thành phố"
                       :options="Tinh"
                       :field-names="{ label: 'name', value: 'name', options: 'Tinh' }"
                       @change="getHuyen">
-                      
                     </a-select>
                   </a-form-item>
                 </a-col>
                 <a-col :span="8">
-                  <a-form-item >
+                  <a-form-item 
+                  :rules="[{ required: true, message: 'Vui lòng chọn Quận/Huyện!' }]"
+                  name="Huyen"
+                  >
                     <a-select 
                       v-model:value="ThongTinKH.Huyen" 
                       :options="Huyen"
@@ -57,7 +73,10 @@
                   </a-form-item>
                 </a-col>
                 <a-col :span="8">
-                  <a-form-item >
+                  <a-form-item 
+                  :rules="[{ required: true, message: 'Vui lòng chọn Phường/Xã!' }]"
+                  name="Xa"
+                  >
                     <a-select 
                       v-model:value="ThongTinKH.Xa" 
                       placeholder="Phường/Xã"
@@ -70,7 +89,10 @@
                 </a-col>
               </a-row>
                 
-                <a-form-item>
+                <a-form-item
+                :rules="[{ required: true, message: 'Thông tin này không được để trống!' }]"
+                name="DiaChi"
+                >
                   <a-textarea
                     :rows="5"
                     v-model:value="ThongTinKH.DiaChi"
@@ -150,6 +172,7 @@
 </template>
 
 <script>
+import { Modal } from 'ant-design-vue';
 import ModalThanhCong from "./ModalThanhCong.vue";
 import tinhThanhData from '@/stores/dataTinhThanh.json';
 import APIService from "@/helpers/ApiService";
@@ -165,10 +188,20 @@ export default {
     return {
       URL: "http://localhost:44301/",
       ThongTinKH: {
-    },
+      },
       Tinh: tinhThanhData.data,
       Huyen:[],
       Xa:[],
+      rules:{
+        Tinh:{
+          required: true, message: 'Thông tin này không được để trống', trigger: 'change'
+        },
+        tenNhom:{
+          required: true, message: 'Thông tin này không được để trống', trigger: 'change'
+        },
+       
+        
+      },
     };
   },
   methods: {
@@ -190,8 +223,31 @@ export default {
         console.log('No userClient found in localStorage');
       }
     },
+    countDown() {
+      let secondsToGo = 5;
+      const modal = Modal.success({
+        title: 'Đặt hàng thành công!',
+        content: `Hệ thống sẽ tự động quay về trang chủ sau ${secondsToGo} giây.`,
+        onOk: () => {
+          this.$router.push('/');
+        }
+      });
+      const interval = setInterval(() => {
+        secondsToGo -= 1;
+        modal.update({
+          content: `Hệ thống sẽ tự động quay về trang chủ sau ${secondsToGo} giây.`,
+        });
+      }, 1000);
+      setTimeout(() => {
+        clearInterval(interval);
+        modal.destroy();
+        this.$router.push('/');
+      }, secondsToGo * 1000);
+    },
     handleOk() {
-      const Order ={
+      this.$refs.formRef.validate().then(async () => {
+       
+        const Order ={
         idUser : this.ThongTinKH.UserId,
         tenKhachHang: this.ThongTinKH.TenKhachHang,
         soDienThoai: this.ThongTinKH.SoDienThoai,
@@ -210,11 +266,17 @@ export default {
         console.log('order', orderId);
         console.log('gio hang', this.$store.state.cart)
         this.OrderDetail(orderId);
-        this.openModalThanhCong();
+        this.$store.commit('clearCart');
+        this.countDown();
       })
       .catch(error => {
         console.log('orderloi',error);
       })
+      })
+      .catch(error =>{
+        console.log('error', error);
+      })
+     
       
     },
     OrderDetail(orderId){

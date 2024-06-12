@@ -64,7 +64,7 @@ router.beforeEach((routeTo, routeFrom, next) => {
   }
 
   // Nếu người dùng chưa đăng nhập, chuyển hướng đến trang đăng nhập
-  return next('/login');
+  return next('/admin/login');
 });
 
 router.beforeResolve(async (routeTo, routeFrom, next) => {

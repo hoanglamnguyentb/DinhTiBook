@@ -11,7 +11,7 @@
             </p>
             <div class="see-more">
               <p style="text-align: justify">
-                <a :href= "`/tin-tuc/`+TinTuc.id"
+                <a :href= "`/tin-tuc/chi-tiet/`+TinTuc.id"
                   ><span style="color: #e74c3c">Xem thêm</span></a
                 >
               </p>
@@ -30,11 +30,11 @@
         <span class="count_all">{{ this.optionPage.totalCount }} kết quả</span>
         <div class="grid">
           <div v-for="(item, index) in lstSanPham" :key="index" class="item">
-            <a :href="`/detail/` + item.id" class="img_box">
+            <a :href="`/sach/` + item.slug" class="img_box">
               <img :src="URL + item.pathAnh" alt="" />
             </a>
             <div class="info-box">
-              <a class="name" :href="`/detail/` + item.id">{{
+              <a class="name" :href="`/sach/` + item.slug">{{
                 item.tenSach
               }}</a>
               <p class="price">
@@ -63,6 +63,7 @@
     </div>
   </div>
   <FooterClient></FooterClient>
+  <ChatBox></ChatBox>
 </template>
 
 <script>
@@ -71,13 +72,15 @@ import Header from '@/components/Header';
 import FooterClient from '@/components/FooterClient.vue';
 import APIService from '@/helpers/ApiService';
 import Common from '@/helpers/Common';
+import ChatBox from '@/components/ChatBox';
 
 export default {
   components: {
     Header,
     FooterClient,
     Pagination,
-    FooterClient
+    FooterClient,
+    ChatBox
   },
   data() {
     return {

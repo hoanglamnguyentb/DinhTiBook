@@ -51,6 +51,24 @@ export default {
     const formattedMonth = month < 10 ? '0' + month : month;
     return formattedDay + '/' + formattedMonth + '/' + year;
   },
+  formatDateTime: (date) => {
+    var newDate = new Date(date);
+
+    // 2. Extract year, month (0-indexed), day, hours (24-hour format), and minutes
+    const year = newDate.getFullYear();
+    const month = newDate.getMonth() + 1; // Adjust for 0-based indexing
+    const day = newDate.getDate();
+    const hours = newDate.getHours();
+    const minutes = newDate.getMinutes();
+
+    // 3. Format day, month, and hours/minutes with leading zeros if necessary
+    const formattedDay = day < 10 ? '0' + day : day;
+    const formattedMonth = month < 10 ? '0' + month : month;
+    const formattedHours = hours < 10 ? '0' + hours : hours;
+    const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+
+    return formattedDay + '/' + formattedMonth + '/' + year + ' ' + formattedHours + ':' + formattedMinutes;
+  },
   formatCurrency(value) {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',

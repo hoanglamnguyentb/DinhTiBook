@@ -97,7 +97,7 @@
                     v-model:content="sanpham.moTaSach"
                     contentType="html"
                     @change="quill"
-                    
+                    ref="myQuillEditor"
                   />
                 </a-form-item>
               
@@ -230,6 +230,18 @@ export default {
         .then(response =>{
           console.log(response.data.data.id)
           this.newProductId = response.data.data.id
+          this.sanpham.tenSach= '',
+          this.sanpham.tenTacGia= '',
+          this.sanpham.idNhaXuatBan= '',
+          this.sanpham.namXuatBan= '',
+          this.sanpham.idDanhMuc= '',
+          this.sanpham.giaTien= '',
+          this.sanpham.soLuongTon= '',
+          this.sanpham.giamGia='',
+          this.sanpham.idNhomDoTuoi= '';
+         
+          // this.sanpham ='';
+          this.$refs.myQuillEditor.setText('');
           toast.success("Thêm sản phẩm thành công", {
             theme: "colored",
             autoClose: 2000,

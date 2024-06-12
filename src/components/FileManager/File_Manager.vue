@@ -95,6 +95,24 @@ export default {
           this. uploading = false;
         });
     },
+
+    async handleUploadSlide(newId){
+      console.log('Đã nhận được newProductId: ', newId);
+      const formData = new FormData();
+      this.fileList.forEach(file => {
+        formData.append('Files', file);
+      });
+
+      this.uploading = true;
+      APIService.post(`/FileManager/Upload1?ParentID=${newProductId}`, formData)
+        .then(() => {
+          this.fileList = [];
+          console.log('thanhf cong')
+        })
+        .catch(() => {
+          this. uploading = false;
+        });
+    },
     handleRemove(file) {
       const index = this.fileList.indexOf(file);
       this.fileList.splice(index, 1);

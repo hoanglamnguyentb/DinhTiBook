@@ -44,7 +44,7 @@ export default {
   methods: {
     async showModal() {
       this.open = true;
-      var id = localStorage.getItem('user')
+      var id = localStorage.getItem('userClient')
       var res = await APIService.get(`/User/`+id);
       this.profile = res.data.data;
     },
@@ -57,7 +57,7 @@ export default {
       this.$refs.formRef.validate().then(async () => {
         try {
           const data ={
-            userId : localStorage.getItem('user'),
+            userId : localStorage.getItem('userClient'),
             email: this.profile.email,
             phoneNumber: this.profile.phoneNumber,
             fullName: this.profile.fullName

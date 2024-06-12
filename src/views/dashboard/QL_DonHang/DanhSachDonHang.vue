@@ -2,23 +2,50 @@
   <PageHeader :title="title" :items="items" />
   <a-row>
     <a-col :span="24">
-      <a-card title="Danh sách nhà xuất bản">
-        <template #extra>
+      <a-card title="Danh sách đơn hàng">
+        <!-- <template #extra>
           <a-button @click="openModalAdd" type="primary">Thêm mới</a-button>
-        </template>
+        </template> -->
         <div>
-          <a-row style="margin-bottom: 20px" :gutter="24">
-            <a-col :span="12">
+          <a-row style="margin-bottom: 20px" :gutter="18">
+            <a-col :span="8">
               <a-input
-                v-model:value="formSearch.TenNXBFilter"
+                v-model:value="formSearch.TenKhachHangFilter"
                 @keyup.enter="SearchData"
-                placeholder="Tiêu đề"
+                placeholder="Tìm theo tên khách hàng"
               >
+              
                 <template #prefix>
                   <i class="ri-search-line search-icon"></i>
                 </template>
               </a-input>
             </a-col>
+            <a-col :span="8">
+              <a-input
+                v-model:value="formSearch.SoDienThoaiFilter"
+                @keyup.enter="SearchData"
+                placeholder="Tìm theo số điện thoại"
+              >
+              
+                <template #prefix>
+                  <i class="ri-search-line search-icon"></i>
+                </template>
+              </a-input>
+            </a-col>
+
+            <a-col :span="4">
+              <a-form-item >
+                <a-select 
+                v-model:value="formSearch.TrangThaiFiler" 
+                placeholder="Chọn trạng thái"
+                :options="lstTrangThai"
+                :field-names="{ label: 'text', value: 'value'}"
+              >
+              </a-select>
+              </a-form-item>
+              
+            </a-col >
+            
             <a-col :span="4">
               <a-button type="primary"  @click="SearchData"><i class="ri-equalizer-fill me-2 align-bottom"></i>Tìm kiếm</a-button>
             </a-col>
@@ -38,7 +65,7 @@
                     <template v-if="column.key === 'trangThaiDonHang'">
                       <ul class="list-inline hstack gap-2 mb-0">
                         <li v-if="record.trangThaiDonHang === 1">Chờ xác nhận</li>
-                        <li v-if="record.trangThaiDonHang === 2">Chờ giao hàng</li>
+                        <li v-if="record.trangThaiDonHang === 2">Đang giao hàng</li>
                         <li v-if="record.trangThaiDonHang === 3">Đã giao hàng</li>
                         <li v-if="record.trangThaiDonHang === 4">Đã hủy</li>
                       </ul>
@@ -50,7 +77,7 @@
                       <ul class="list-inline hstack gap-2 mb-0">
                         <li>
                           <router-link :to="{ name: 'QL_DonHangDetail', params: { id: record.id } }">
-                            <i class="ri-pencil-fill fs-16"></i>
+                            <i class="ri-information-line fs-16"></i>
                           </router-link>
                         </li>
                     </ul>
@@ -78,24 +105,24 @@ import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 export default {
   page: {
-    title: "Quản lý nhà xuất bản",
+    title: "Quản lý đơn hàng",
     meta: [
       {
-        name: "Danh sách nhà xuất bản",
+        name: "Danh sách đơn hnagf",
         content: appConfig.description,
       },
     ],
   },
   data() {
     return {
-      title: "Quản lý nhà xuất bản",
+      title: "Quản lý đơn hàng",
       items: [
         {
           text: "Dashboard",
           href: "/",
         },
         {
-          text: "Quản lý nhà xuất bản",
+          text: "Quản lý đơn hàng",
           active: true,
         },
       ],
@@ -108,6 +135,13 @@ export default {
         { title: "Trạng thái đơn hàng", key: "trangThaiDonHang" },
         { title: "Thao tác",key: "action", width: 150}
       ],
+      lstTrangThai:[
+        {text: "--Chọn trạng thái--", value: 0},
+        {text: "Chờ xác nhận", value: 1},
+        {text: "Đang giao hàng", value: 2},
+        {text: "Đã giao hàng", value: 3},
+        {text: "Đã hủy", value: 4}
+      ],
       pages: [],
       lstDonHang:[],
       optionPage: {
@@ -116,8 +150,9 @@ export default {
         totalCount: 0,
       },
       formSearch: {
-        TenNXBFilter: "",
-        
+        TenKhachHangFilter: "",
+        TrangThaiFiler: 0,
+        SoDienThoaiFilter: ""
       },
     };
   },
@@ -126,60 +161,16 @@ export default {
     getToken() {
       return (user = JSON.parse(localStorage.getItem("user")));
     },
-    deletedata(event) {
-      Swal.fire({
-        title: "Đồng ý xóa dữ liệu",
-        text: "Sau khi xóa sẽ không thể khôi phục lại.",
-        icon: "warning",
-        showCancelButton: true,
-        cancelButtonText: "Hủy",
-        cancelButtonColor: "#f46a6a",
-        confirmButtonColor: "#34c38f",
-        confirmButtonText: "Đồng ý",
-      }).then(async (result) => {
-        if (result.value) {
-          try {
-            //xóa trên database
-            await APIService.delete("/NhaXuatBan/delete/" + event.id);
-            toast.success("Xóa thành công.", {
-              theme: "colored",
-              autoClose: 2000,
-            });
-
-            this.loadData(this.optionPage.pageIndex, this.optionPage.pageSize);
-          } catch (e) {
-            if (e.status == 401) {
-              toast.error("Bạn không có quyền truy cập.", {
-                theme: "colored",
-                autoClose: 2000,
-              });
-            } else {
-              if (e.data && e.data.Message) {
-                this.errMessage = e.data.Message;
-                toast.error(e.data.Message, {
-                  theme: "colored",
-                  autoClose: 2000,
-                });
-              } else {
-                toast.error("Xóa thất bại. Vui lòng thử lại sau.", {
-                  theme: "colored",
-                  autoClose: 2000,
-                });
-              }
-            }
-          }
-        }
-      });
-    },
     SearchData() {
-      // this.value = this.value1;
       var searchParam = {
+       
         pageIndex: this.optionPage.pageIndex,
         pageSize: this.optionPage.pageSize,
-        
-       
+        TrangThaiFilter: this.formSearch.TrangThaiFiler,
+        TenKhachHangFilter: this.formSearch.TenKhachHangFilter,
+        SoDienThoaiFilter: this.formSearch.SoDienThoaiFilter
       };
-
+     
       this.loadData(1, 10, searchParam);
     },
     handlePageChange(page) {

@@ -36,6 +36,20 @@
                     <li>{{ index+1 }}</li>
                   </ul>
                 </template>
+                <template v-if="column.key === 'noiBat'">
+                    <td style="font-weight: 700;font-size: 18px; color: green" v-if="record.noiBat == true">
+                        
+                        <i class="ri-check-line"></i>
+                      </td>
+                      <td v-if="record.noiBat == false"></td>
+                  </template>
+                  <template v-if="column.key === 'giamGia'">
+                    <td style="font-size: 18px;">
+                        
+                        {{record.giamGia}} %
+                      </td>
+                      <td v-if="record.noiBat == false"></td>
+                  </template>
                 <template v-if="column.key === 'action'">
                   <ul class="list-inline hstack gap-2 mb-0">
                     <li
@@ -122,15 +136,15 @@ export default {
         { title: "Hình ảnh", dataIndex: "pathAnh", key:"pathAnh",width: 150},
         { title: "Tên sách", dataIndex: "tenSach", width:300},
         { title: "Tên tác giả", dataIndex: "tenTacGia", width:300 },
-        { title: "Nhà xuất bản",dataIndex: "idNhaXuatBan",  width:300 },
-        { title: "Năm xuất bản",dataIndex: "namXuatBan",  width:300},
-        { title: "Danh mục", dataIndex: "idDanhMuc",  width:300 },
-        { title: "Giá tiền", dataIndex: "giaTien",  width:300 },
-        { title: "Số lượng tồn", dataIndex: "soLuongTon",  width:300 },
+        { title: "Nhà xuất bản",dataIndex: "tenNXB",  width:300 },
+        { title: "Năm xuất bản",dataIndex: "namXuatBan",  width:150},
+        { title: "Danh mục", dataIndex: "tenDanhMuc",  width:300 },
+        { title: "Giá tiền", dataIndex: "giaTien",  width:130 },
+        { title: "Số lượng tồn", dataIndex: "soLuongTon", width: 130},
         
-        { title: "Nhóm độ tuổi", dataIndex: "idNhomDoTuoi" },
-        { title: "Nổi bật", dataIndex: "noiBat" },
-        { title: "Giảm giá", dataIndex: "giamGia" },
+        { title: "Nhóm độ tuổi", dataIndex: "tenNhomDoTuoi",  width:300  },
+        { title: "Nổi bật", key: "noiBat" },
+        { title: "Giảm giá", key: "giamGia", width: 130 },
         { title: "Thao tác", key: "action"}
       ],
       pages: [],

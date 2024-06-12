@@ -71,10 +71,10 @@ export default {
 
         if(dataLogin.data != null && dataLogin.data.accessToken){
           
-          localStorage.setItem("user", JSON.stringify(dataLogin.data.userData));
+          localStorage.setItem("user", dataLogin.data.userData.userId);
           localStorage.setItem("accessToken", dataLogin.data.accessToken);
-
-  
+          
+          console.log('profile', localStorage.getItem('user'))
           var token = dataLogin.data.accessToken;
 
           const protectedHeader = jose.decodeJwt(token)
@@ -100,7 +100,7 @@ export default {
             }
             else{
               this.submitted = false;
-              this.authError = "Đăng nhập thất bại. Tài khoản hoặc mật khẩu không đúng. haha";
+              this.authError = "Đăng nhập thất bại. Tài khoản hoặc mật khẩu không đúng.";
             }
           })
           

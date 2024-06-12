@@ -1,10 +1,11 @@
 <template>
-  <div style="background-color: white; padding-top: 100px;">
+  <Header></Header>
+  <div style="background-color: white; padding-top: 70px;">
     <div class="container">
-      <h1 class="h1_title"><span>Sự kiện</span></h1>
+      <h1 class="h1_title"><span >{{ TenTheLoai }}</span></h1>
       <div class="grid-list">
         <div v-for="(item, index) in lstTinTuc" :key="index" class="item">
-          <a :href="`/tin-tuc/`+ item.id">
+          <a :href="`/tin-tuc/chi-tiet/`+ item.id" class="">
             <img :src="URL + item.hinhAnh"  class="img-responsive">
           </a>
           <div class="news-content">
@@ -12,22 +13,30 @@
               <i class="ri-calendar-line"></i>
               {{ formatDate(item.ngayTao) }}
             </p>
-            <a :href="`/tin-tuc/`+ item.id" class="a_title">
+            <a :href="`/tin-tuc/chi-tiet/`+ item.id" class="a_title">
               {{ item.tieuDe }}                    
             </a>
             <p class="describe"></p>
-            <a class="see-more" :href="`/tin-tuc/`+ item.id">Xem thêm</a>
+            
+            <a class="see-more" :href="`/tin-tuc/`+ item.id" v-if="index !== 2 && index !== 1 && index !== 3">Xem thêm </a>
           </div>
         </div>
       </div>
     </div>
   </div>
+  <FooterClient></FooterClient>
 </template>
 
 <script>
 import APIService from "@/helpers/ApiService";
-import Common from "@/helpers/Common"
+import Common from "@/helpers/Common";
+import Header from '@/components/Header';
+import FooterClient from '@/components/FooterClient.vue';
 export default {
+  components:{
+    Header,
+    FooterClient
+  },
   data(){
     return{
       lstTinTuc:[],
@@ -38,22 +47,50 @@ export default {
         totalCount: 0,
       },
       URL: 'http://localhost:44301/',
+      Type:[
+        {
+          id: "TINTUC",
+          value: "TIN TỨC"
+        },
+        {
+          id: "LAMCHAME",
+          value: "LÀM CHA MẸ"
+        },
+        {
+          id: "TIENICH",
+          value: "TIỆN ÍCH"
+        },
+        {
+          id: "REVIEW",
+          value: "REVIEW SÁCH"
+        },
+      ],
+      TenTheLoai: ""
     }
   },
   methods:{
     formatDate: Common.formatDate,
-    async loadData(pageIndex, pageSize, params) {
+    type() {
+      var paramType = this.$route.params.type;
+      const type = this.Type.find(x => x.id === paramType);
+      if (type) {
+        this.TenTheLoai = type.value;
+      } else {
+        this.TenTheLoai = "";
+      }
+      
+    },
+    async loadData(pageIndex, pageSize) {
+      var paramType = this.$route.params.type;
       var searchParam = {
         pageIndex: pageIndex,
         pageSize: pageSize,
+        TypeFilter: paramType
       };
-      if (params) {
-        searchParam = params;
-      }
+      
 
       var urlQuery = new URLSearchParams(searchParam).toString();
       var result = await APIService.get("/TinTuc?" + urlQuery);
-  
       if (result.data.data != null && result.data.data.items != null) {
         var res = result.data.data;
         this.lstTinTuc = result.data.data.items;
@@ -67,6 +104,8 @@ export default {
   },
   mounted(){
     this.loadData(this.optionPage.pageIndex, this.optionPage.pageSize);
+    this.type();
+
   }
 }
 </script>

@@ -17,32 +17,74 @@ export default {
         pageSize: 3,
         totalCount: 0,
       },
+      UserProfile:{},
+      idUser:'',
+      name: 'Nguyen Van Anh', // Thay thế bằng tên bạn muốn sử dụng
+      UserName: '',
+      isUserProfileLoaded: false
     };
   },
   created() {
-    this.loadData(this.optionPage.pageIndex, this.optionPage.pageSize);
+    // this.loadData(this.optionPage.pageIndex, this.optionPage.pageSize);
+    this.getUserProfile();
+
   },
-  mounted() {},
+ 
   components: {
     SimpleBar,
   },
-
+  watch: {
+    // Theo dõi sự thay đổi của UserProfile
+    UserProfile: {
+      handler(newVal) {
+        console.log('UserProfile đã thay đổi:', newVal);
+        // Thực hiện các hành động tương ứng khi UserProfile thay đổi
+      },
+      deep: true // Theo dõi sâu (nếu UserProfile là một đối tượng hoặc một mảng)
+    }
+  },
   methods: {
-    async loadData(pageIndex, pageSize, params) {
-      var searchParam = {
-        pageIndex: pageIndex,
-        pageSize: pageSize,
-      };
-      if (params) {
-        searchParam = params;
+    async getUserProfile(){
+      const id = localStorage.getItem('user')
+      try{
+        const res = await APIService.get("User/" + id)
+        console.log(res)
+        this.UserProfile = res.data.data
+        console.log('pôp',this.UserProfile)
+        this.isUserProfileLoaded = true; // Cập nhật biến khi UserProfile đã được tải
       }
-      var result = await APIService.get(`/ThongBao/GetDataPage?DaXemFilter=false`);
-      this.lstThongbao = result.data.data.items;
-      if (result.data.data != null && result.data.data.items != null) {
-        var res = result.data.data;
-        this.lstThongbao = result.data.data.items;
-        this.optionPage.totalCount = res.totalCount;
+      catch(e ){
+        console.log(e)
+      }    
+    },
+
+    DangXuat() {
+      console.log('dang xuaats');
+      localStorage.removeItem('accessTokenClient');
+      localStorage.removeItem('user');
+      // router.push('/admin/login');
+
+      window.location.reload();
+    },
+    getInitial(name) {
+      if (this.isUserProfileLoaded && name) {
+        console.log('okokok', name)
+        return name.charAt(0).toUpperCase();
+      } else {
+        return ''; // hoặc giá trị mặc định khác nếu cần
       }
+
+      // console.log('okokok', name)
+      // return name.charAt(0).toUpperCase();
+    },
+
+    getBackgroundColor(name) {
+      // Bạn có thể tùy chỉnh mã màu này để tạo màu ngẫu nhiên hoặc theo một quy tắc nhất định
+      console.log('okokok1', name)
+      const colors = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae'];
+      const charCode = name.charCodeAt(0);
+      const colorIndex = charCode % colors.length;
+      return colors[colorIndex];
     },
     isCustomDropdown() {
       //Search bar
@@ -248,8 +290,19 @@ export default {
     displayedThongbao() {
       return this.lstThongbao.slice(0, 3); // Return the first 3 items
     },
+    userProfileInitial() {
+      if (this.UserProfile) {
+        console.log('hehehe',this.UserProfile.fullName )
+        return this.getInitial(this.UserProfile.fullName);
+
+      } else {
+        return '';
+      }
+    }
   },
   mounted() {
+    
+    
     document.addEventListener("scroll", function () {
       var pageTopbar = document.getElementById("page-topbar");
       if (pageTopbar) {
@@ -295,121 +348,11 @@ export default {
             </router-link>
           </div>
 
-          <button
-            type="button"
-            class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger"
-            id="topnav-hamburger-icon"
-          >
-            <span class="hamburger-icon">
-              <span></span>
-              <span></span>
-              <span></span>
-            </span>
-          </button>
-
-          <!-- App Search-->
-          <!-- <form class="app-search d-none d-md-block">
-            <div class="position-relative">
-              <input type="text" class="form-control" placeholder="Search..." autocomplete="off" id="search-options"
-                value="" />
-              <span class="mdi mdi-magnify search-widget-icon"></span>
-              <span class="
-                  mdi mdi-close-circle
-                  search-widget-icon search-widget-icon-close
-                  d-none
-                " id="search-close-options"></span>
-            </div>
-            <div class="dropdown-menu dropdown-menu-lg" id="search-dropdown">
-              <SimpleBar data-simplebar style="max-height: 320px">
-                <div class="dropdown-header">
-                  <h6 class="text-overflow text-muted mb-0 text-uppercase">
-                    Recent Searches
-                  </h6>
-                </div>
-
-                <div class="dropdown-item bg-transparent text-wrap">
-                  <router-link to="/" class="btn btn-soft-secondary btn-sm btn-rounded">how to setup <i
-                      class="mdi mdi-magnify ms-1"></i></router-link>
-                  <router-link to="/" class="btn btn-soft-secondary btn-sm btn-rounded">buttons <i
-                      class="mdi mdi-magnify ms-1"></i></router-link>
-                </div>
-                <div class="dropdown-header mt-2">
-                  <h6 class="text-overflow text-muted mb-1 text-uppercase">
-                    Pages
-                  </h6>
-                </div>
-
-                <b-link href="javascript:void(0);" class="dropdown-item notify-item">
-                  <i class="
-                      ri-bubble-chart-line
-                      align-middle
-                      fs-18
-                      text-muted
-                      me-2
-                    "></i>
-                  <span>Analytics Dashboard</span>
-                </b-link>
-
-                <b-link href="javascript:void(0);" class="dropdown-item notify-item">
-                  <i class="ri-lifebuoy-line align-middle fs-18 text-muted me-2"></i>
-                  <span>Help Center</span>
-                </b-link>
-
-                <b-link href="javascript:void(0);" class="dropdown-item notify-item">
-                  <i class="
-                      ri-user-settings-line
-                      align-middle
-                      fs-18
-                      text-muted
-                      me-2
-                    "></i>
-                  <span>My account settings</span>
-                </b-link>
-
-                <div class="dropdown-header mt-2">
-                  <h6 class="text-overflow text-muted mb-2 text-uppercase">
-                    Members
-                  </h6>
-                </div>
-
-                <div class="notification-list">
-                  <b-link href="javascript:void(0);" class="d-flex dropdown-item notify-item py-2">
-                    <img src="@/assets/images/users/avatar-2.jpg" class="me-3 rounded-circle avatar-xs"
-                      alt="user-pic" />
-                    <div class="flex-1">
-                      <h6 class="m-0">Angela Bernier</h6>
-                      <span class="fs-11 mb-0 text-muted">Manager</span>
-                    </div>
-                  </b-link>
-                  <b-link href="javascript:void(0);" class="d-flex dropdown-item notify-item py-2">
-                    <img src="@/assets/images/users/avatar-3.jpg" class="me-3 rounded-circle avatar-xs"
-                      alt="user-pic" />
-                    <div class="flex-1">
-                      <h6 class="m-0">David Grasso</h6>
-                      <span class="fs-11 mb-0 text-muted">Web Designer</span>
-                    </div>
-                  </b-link>
-                  <b-link href="javascript:void(0);" class="d-flex dropdown-item notify-item py-2">
-                    <img src="@/assets/images/users/avatar-5.jpg" class="me-3 rounded-circle avatar-xs"
-                      alt="user-pic" />
-                    <div class="flex-1">
-                      <h6 class="m-0">Mike Bunch</h6>
-                      <span class="fs-11 mb-0 text-muted">React Developer</span>
-                    </div>
-                  </b-link>
-                </div>
-              </SimpleBar>
-
-              <div class="text-center pt-3 pb-1">
-                <router-link to="/pages/search-results" class="btn btn-primary btn-sm">View All Results <i
-                    class="ri-arrow-right-line ms-1"></i></router-link>
-              </div>
-            </div>
-          </form> -->
+         
         </div>
 
         <div class="d-flex align-items-center">
-          <div class="dropdown d-md-none topbar-head-dropdown header-item">
+          <!-- <div class="dropdown d-md-none topbar-head-dropdown header-item">
             <button
               type="button"
               class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle"
@@ -440,9 +383,9 @@ export default {
                 </div>
               </form>
             </div>
-          </div>
+          </div> -->
 
-          <div class="dropdown topbar-head-dropdown ms-1 header-item">
+          <!-- <div class="dropdown topbar-head-dropdown ms-1 header-item">
             <button
               type="button"
               class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle"
@@ -513,7 +456,7 @@ export default {
                 </b-row>
               </div>
             </div>
-          </div>
+          </div> -->
 
           <div class="ms-1 header-item d-none d-sm-flex">
             <b-button
@@ -527,369 +470,8 @@ export default {
             </b-button>
           </div>
 
-          <div class="ms-1 header-item d-none d-sm-flex">
-            <b-button
-              type="button"
-              variant="ghost-secondary"
-              class="btn-icon btn-topbar rounded-circle light-dark-mode"
-              @click="toggleDarkMode"
-            >
-              <i class="bx bx-moon fs-22"></i>
-            </b-button>
-          </div>
-
-          <div class="dropdown topbar-head-dropdown ms-1 header-item">
-            <button
-              type="button"
-              class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle"
-              id="page-header-notifications-dropdown"
-              data-bs-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
-              <i class="bx bx-bell fs-22"></i>
-              <span
-                class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger"
-              >
-                {{ optionPage.totalCount
-                }}<span class="visually-hidden">unread messages</span></span
-              >
-            </button>
-            <div
-              class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0"
-              aria-labelledby="page-header-notifications-dropdown"
-            >
-              <div class="dropdown-head bg-primary bg-pattern rounded-top">
-                <div class="p-3">
-                  <b-row class="align-items-center">
-                    <b-col>
-                      <h6 class="m-0 fs-16 fw-semibold text-white">Thông báo mới</h6>
-                    </b-col>
-                    <b-col cols="auto" class="dropdown-tabs">
-                      <b-badge variant="soft-light" class="badge-soft-light fs-13">
-                        {{ lstThongbao.length }} chưa đọc</b-badge
-                      >
-                    </b-col>
-                  </b-row>
-                </div>
-
-                <div class="px-2 pt-2">
-                  <ul
-                    class="nav nav-tabs dropdown-tabs nav-tabs-custom"
-                    data-dropdown-tabs="true"
-                    id="notificationItemsTab"
-                    role="tablist"
-                  >
-                    <li class="nav-item">
-                      <b-link
-                        class="nav-link active"
-                        data-bs-toggle="tab"
-                        href="#all-noti-tab"
-                        role="tab"
-                        aria-selected="false"
-                        @click.capture.stop
-                      >
-                        Mới ({{ optionPage.totalCount }})
-                      </b-link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <div class="tab-content" id="notificationItemsTabContent">
-                <div
-                  class="tab-pane fade py-2 ps-2 show active"
-                  id="all-noti-tab"
-                  role="tabpanel"
-                >
-                  <SimpleBar data-simplebar style="max-height: 300px" class="pe-2">
-                    <div class="notification-container">
-                      <div
-                        v-for="(item, index) of displayedThongbao"
-                        :key="index"
-                        class="text-reset notification-item d-block dropdown-item position-relative"
-                      >
-                        <div class="d-flex">
-                          <div class="avatar-xs me-3">
-                            <span
-                              class="avatar-title bg-soft-info text-info rounded-circle fs-16"
-                            >
-                              <i class="bx bx-badge-check"></i>
-                            </span>
-                          </div>
-                          <div class="flex-1">
-                            <b-link v-bind:href="item.link" class="stretched-link">
-                              <h6 class="mt-0 mb-2 lh-base">
-                                {{ item.noiDung }}
-                              </h6>
-                            </b-link>
-                            <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                              <span
-                                ><i class="mdi mdi-clock-outline"></i>
-                                {{ formatDate(item.createdDate) }}</span
-                              >
-                            </p>
-                          </div>
-                          <div class="px-2 fs-15">
-                            <input class="form-check-input" type="checkbox" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <!--                     
-                    <div class="text-reset notification-item d-block dropdown-item position-relative">
-                      <div class="d-flex">
-                        <div class="avatar-xs me-3">
-                          <span class="avatar-title bg-soft-info text-info rounded-circle fs-16">
-                            <i class="bx bx-badge-check"></i>
-                          </span>
-                        </div>
-                        <div class="flex-1">
-                          <b-link href="#!" class="stretched-link">
-                            <h6 class="mt-0 mb-2 lh-base">
-                              Your <b>Elite</b> author Graphic Optimization
-                              <span class="text-secondary">reward</span> is
-                              ready!
-                            </h6>
-                          </b-link>
-                          <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                            <span><i class="mdi mdi-clock-outline"></i> Just 30 sec ago</span>
-                          </p>
-                        </div>
-                        <div class="px-2 fs-15">
-                          <input class="form-check-input" type="checkbox" />
-                        </div>
-                      </div>
-                    </div> -->
-                    <!-- -->
-
-                    <!-- <div class="text-reset notification-item d-block dropdown-item position-relative">
-                      <div class="d-flex">
-                        <img src="@/assets/images/users/avatar-2.jpg" class="me-3 rounded-circle avatar-xs"
-                          alt="user-pic" />
-                        <div class="flex-1">
-                          <b-link href="#!" class="stretched-link">
-                            <h6 class="mt-0 mb-1 fs-13 fw-semibold">
-                              Angela Bernier
-                            </h6>
-                          </b-link>
-                          <div class="fs-13 text-muted">
-                            <p class="mb-1">
-                              Answered to your comment on the cash flow forecast's graph 🔔.
-                            </p>
-                          </div>
-                          <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                            <span><i class="mdi mdi-clock-outline"></i> 48 min ago</span>
-                          </p>
-                        </div>
-                        <div class="px-2 fs-15">
-                          <input class="form-check-input" type="checkbox" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="text-reset notification-item d-block dropdown-item position-relative">
-                      <div class="d-flex">
-                        <div class="avatar-xs me-3">
-                          <span class="avatar-title bg-soft-danger text-danger rounded-circle fs-16">
-                            <i class="bx bx-message-square-dots"></i>
-                          </span>
-                        </div>
-                        <div class="flex-1">
-                          <b-link href="#!" class="stretched-link">
-                            <h6 class="mt-0 mb-2 fs-13 lh-base">
-                              You have received <b class="text-success">20</b> new messages in the conversation
-                            </h6>
-                          </b-link>
-                          <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                            <span><i class="mdi mdi-clock-outline"></i> 2 hrs
-                              ago</span>
-                          </p>
-                        </div>
-                        <div class="px-2 fs-15">
-                          <input class="form-check-input" type="checkbox" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="text-reset notification-item d-block dropdown-item position-relative">
-                      <div class="d-flex">
-                        <img src="@/assets/images/users/avatar-8.jpg" class="me-3 rounded-circle avatar-xs"
-                          alt="user-pic" />
-                        <div class="flex-1">
-                          <b-link href="#!" class="stretched-link">
-                            <h6 class="mt-0 mb-1 fs-13 fw-semibold">
-                              Maureen Gibson
-                            </h6>
-                          </b-link>
-                          <div class="fs-13 text-muted">
-                            <p class="mb-1">
-                              We talked about a project on linkedin.
-                            </p>
-                          </div>
-                          <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                            <span><i class="mdi mdi-clock-outline"></i> 4 hrs
-                              ago</span>
-                          </p>
-                        </div>
-                        <div class="px-2 fs-15">
-                          <input class="form-check-input" type="checkbox" />
-                        </div>
-                      </div>
-                    </div> -->
-
-                    <div class="my-3 text-center">
-                      <b-button
-                        href="/dashboard/thongbao"
-                        type="button"
-                        variant="soft-success"
-                      >
-                        Xem tất cả các thông báo
-                        <i class="ri-arrow-right-line align-middle"></i>
-                      </b-button>
-                    </div>
-                  </SimpleBar>
-                </div>
-
-                <div
-                  class="tab-pane fade py-2 ps-2"
-                  id="messages-tab"
-                  role="tabpanel"
-                  aria-labelledby="messages-tab"
-                >
-                  <SimpleBar data-simplebar style="max-height: 300px" class="pe-2">
-                    <div class="text-reset notification-item d-block dropdown-item">
-                      <div class="d-flex">
-                        <img
-                          src="@/assets/images/users/avatar-3.jpg"
-                          class="me-3 rounded-circle avatar-xs"
-                          alt="user-pic"
-                        />
-                        <div class="flex-1">
-                          <b-link href="#!" class="stretched-link">
-                            <h6 class="mt-0 mb-1 fs-13 fw-semibold">James Lemire</h6>
-                          </b-link>
-                          <div class="fs-13 text-muted">
-                            <p class="mb-1">We talked about a project on linkedin.</p>
-                          </div>
-                          <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                            <span><i class="mdi mdi-clock-outline"></i> 30 min ago</span>
-                          </p>
-                        </div>
-                        <div class="px-2 fs-15">
-                          <input class="form-check-input" type="checkbox" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="text-reset notification-item d-block dropdown-item">
-                      <div class="d-flex">
-                        <img
-                          src="@/assets/images/users/avatar-2.jpg"
-                          class="me-3 rounded-circle avatar-xs"
-                          alt="user-pic"
-                        />
-                        <div class="flex-1">
-                          <b-link href="#!" class="stretched-link">
-                            <h6 class="mt-0 mb-1 fs-13 fw-semibold">Angela Bernier</h6>
-                          </b-link>
-                          <div class="fs-13 text-muted">
-                            <p class="mb-1">
-                              Answered to your comment on the cash flow forecast's graph
-                              🔔.
-                            </p>
-                          </div>
-                          <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                            <span><i class="mdi mdi-clock-outline"></i> 2 hrs ago</span>
-                          </p>
-                        </div>
-                        <div class="px-2 fs-15">
-                          <input class="form-check-input" type="checkbox" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="text-reset notification-item d-block dropdown-item">
-                      <div class="d-flex">
-                        <img
-                          src="@/assets/images/users/avatar-6.jpg"
-                          class="me-3 rounded-circle avatar-xs"
-                          alt="user-pic"
-                        />
-                        <div class="flex-1">
-                          <b-link href="#!" class="stretched-link">
-                            <h6 class="mt-0 mb-1 fs-13 fw-semibold">Kenneth Brown</h6>
-                          </b-link>
-                          <div class="fs-13 text-muted">
-                            <p class="mb-1">
-                              Mentionned you in his comment on 📃 invoice #12501.
-                            </p>
-                          </div>
-                          <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                            <span><i class="mdi mdi-clock-outline"></i> 10 hrs ago</span>
-                          </p>
-                        </div>
-                        <div class="px-2 fs-15">
-                          <input class="form-check-input" type="checkbox" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="text-reset notification-item d-block dropdown-item">
-                      <div class="d-flex">
-                        <img
-                          src="@/assets/images/users/avatar-8.jpg"
-                          class="me-3 rounded-circle avatar-xs"
-                          alt="user-pic"
-                        />
-                        <div class="flex-1">
-                          <b-link href="#!" class="stretched-link">
-                            <h6 class="mt-0 mb-1 fs-13 fw-semibold">Maureen Gibson</h6>
-                          </b-link>
-                          <div class="fs-13 text-muted">
-                            <p class="mb-1">We talked about a project on linkedin.</p>
-                          </div>
-                          <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                            <span><i class="mdi mdi-clock-outline"></i> 3 days ago</span>
-                          </p>
-                        </div>
-                        <div class="px-2 fs-15">
-                          <input class="form-check-input" type="checkbox" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="my-3 text-center">
-                      <b-button type="button" variant="soft-success">
-                        View All Messages
-                        <i class="ri-arrow-right-line align-middle"></i>
-                      </b-button>
-                    </div>
-                  </SimpleBar>
-                </div>
-
-                <div
-                  class="tab-pane fade p-4"
-                  id="alerts-tab"
-                  role="tabpanel"
-                  aria-labelledby="alerts-tab"
-                >
-                  <div class="w-25 w-sm-50 pt-3 mx-auto">
-                    <img
-                      src="@/assets/images/svg/bell.svg"
-                      class="img-fluid"
-                      alt="user-pic"
-                    />
-                  </div>
-                  <div class="text-center pb-5 mt-2">
-                    <h6 class="fs-18 fw-semibold lh-base">
-                      Hey! You have no any notifications
-                    </h6>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+         
+          
 
           <div class="dropdown ms-sm-3 header-item topbar-user">
             <button
@@ -900,37 +482,57 @@ export default {
               aria-haspopup="true"
               aria-expanded="false"
             >
-              <span class="d-flex align-items-center">
-                <img
-                  class="rounded-circle header-profile-user"
-                  src="@/assets/images/users/avatar-1.jpg"
-                  alt="Header Avatar"
-                />
+              <div v-if="UserProfile">
+                <span class="d-flex align-items-center">
+                
+                <!-- <div class="avatar" :style="{ backgroundColor: getBackgroundColor(UserProfile.fullName) }">   -->
+                  <div class="avatar" style="background-color: #f56a00;">
+                  <!-- {{ getInitial(UserProfile.fullName) }} -->
+                  {{ userProfileInitial }}
+                </div>
                 <span class="text-start ms-xl-2">
                   <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text"
-                    >Anna Adame</span
+                    >{{ UserProfile.fullName }}</span
                   >
-                  <span class="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text"
-                    >Founder</span
-                  >
+                  
                 </span>
               </span>
+              </div>
+              
             </button>
             <div class="dropdown-menu dropdown-menu-end">
-              <h6 class="dropdown-header">Welcome Anna!</h6>
+              <h6 class="dropdown-header">Welcome {{ UserProfile.fullName }}</h6>
               <router-link class="dropdown-item" to="/dashboard/profile"
                 ><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i>
                 <span class="align-middle">Profile</span>
               </router-link>
               <div class="dropdown-divider"></div>
-              <b-link class="dropdown-item" href="/logout"
+              <b-link class="dropdown-item" @click="DangXuat"
                 ><i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i>
                 <span class="align-middle" data-key="t-logout">Đăng xuất</span>
               </b-link>
             </div>
           </div>
+
+          
         </div>
       </div>
     </div>
   </header>
 </template>
+<style scoped>
+
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  margin-right: 10px;
+  text-transform: uppercase; /* Đảm bảo chữ cái đầu tiên luôn là chữ in hoa */
+}
+</style>

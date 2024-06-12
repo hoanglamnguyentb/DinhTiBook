@@ -81,7 +81,7 @@
     <div id="layout-wrapper">
       <NavBar />
       <div>
-        <div class="app-menu navbar-menu">
+        <div class="app-menu navbar-menu" style="background-color: #e9262a; border: 1px solid #e9262a;">
           <!-- LOGO -->
           <div class="navbar-brand-box">
             <!-- Dark Logo-->
@@ -99,12 +99,12 @@
                 <img src="@/assets/images/logo-sm.png" alt="" height="22" />
               </span>
               <span class="logo-lg">
-                <img src="@/assets/images/logo-light.png" alt="" height="17" />
+                <img src="@/assets/images/logo_dinhti.png" alt="" height="45" />
               </span>
             </router-link>
-            <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover" @click="initActiveMenu">
+            <!-- <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover" @click="initActiveMenu">
               <i class="ri-record-circle-line"></i>
-            </button>
+            </button> -->
           </div>
   
           <SimpleBar id="scrollbar" class="h-100" ref="scrollbar">

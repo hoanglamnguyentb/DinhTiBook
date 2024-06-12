@@ -85,6 +85,7 @@ export default {
         pageIndex: data.pageIndex,
         pageSize: data.pageSize,
         totalCount: data.totalCount,
+        isNoiBatFilter: true
       };
     },
     LocGia(min, max){
@@ -94,16 +95,13 @@ export default {
       this.optionPage.pageIndex = page;
       this.loadData(this.optionPage.pageIndex, this.optionPage.pageSize);
     },
-    async loadData(pageIndex, pageSize, params) {
-      var paramId = this.$route.params.id;
+    async loadData(pageIndex, pageSize) {
       var searchParam = {
         pageIndex: pageIndex,
         pageSize: pageSize,
-        DanhMucFilter: paramId,
+        isNoiBatFilter: true
       };
-      if (params) {
-        searchParam = params;
-      }
+    
 
       var urlQuery = new URLSearchParams(searchParam).toString();
       var result = await APIService.get('/SanPham?' + urlQuery);

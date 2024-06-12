@@ -1,8 +1,9 @@
 <template>
-  <Header></Header>
+<Header></Header>
   <div style="background-color: white;" id="main">
     <div
-      class="container vh-100 d-flex align-items-center justify-content-center"
+    style="padding-top: 80px; padding-bottom: 80px;"
+      class="container d-flex align-items-center justify-content-center"
     >
       <div class="form-login">
         <div style="background-color: white;" class="left">
@@ -36,11 +37,11 @@
               ></path>
             </svg>
             <div class="text">
-              <p class="title-text">Đăng nhập</p>
+              <p class="title-text">Đăng ký thành viên</p>
               <p class="summary-text">
-                Bạn chưa có tài khoản?
-                <a href="/dang-ky">
-                  <span class="register">Đăng ký </span>
+                Bạn đã có tài khoản?
+                <a href="/dang-nhap">
+                  <span class="register">Đăng nhập </span>
                 </a>
               </p>
             </div>
@@ -54,7 +55,7 @@
 
           <div class="tab-content">
             <div class="tab-pane active" id="profile-0">
-              <form
+              <!-- <form
                 class="info"
                 action="#"
                 method="post"
@@ -65,14 +66,25 @@
                   variant="danger"
                   class="mt-3"
                   dismissible
-                  >{{ authError }}</b-alert
+                  >{{ DangKy.authError }}</b-alert
                 >
                 <div class="password">
                   <div class="form-group2">
                     <input
                       type="text"
                       name="account"
-                      v-model="TaiKhoan"
+                      v-model="DangKy.FullName"
+                      id="account"
+                      class="form-control"
+                      placeholder="Nhập họ và tên"
+                    />
+                    
+                  </div>
+                  <div class="form-group2">
+                    <input
+                      type="text"
+                      name="account"
+                      v-model="DangKy.TaiKhoan"
                       id="account"
                       class="form-control"
                       placeholder="Nhập tài khoản"
@@ -81,53 +93,54 @@
                   <div class="form-group2">
                     <input
                       type="password"
+                      name="account"
+                      v-model="DangKy.MatKhau"
+                      id="account"
+                      class="form-control"
+                      placeholder="Nhập mật khẩu"
+                    />
+                  </div>
+                  <div class="form-group2">
+                    <input
+                      type="password"
+                      name="account"
+                      v-model="DangKy.NhapLaiMatKhau"
+                      id="account"
+                      class="form-control"
+                      placeholder="Nhập lại mật khẩu"
+                    />
+                  </div>
+                  <div class="form-group2">
+                    <input
+                      type="text"
                       name="pass"
-                      v-model="MatKhau"
+                      v-model="DangKy.SoDienThoai"
                       id="pass"
                       class="form-control"
-                      placeholder="Mật khẩu *"
+                      placeholder="Nhập số điện thoại"
+                    />
+                  </div>
+                  <div class="form-group2">
+                    <input
+                      type="text"
+                      name="pass"
+                      v-model="DangKy.Email"
+                      id="pass"
+                      class="form-control"
+                      placeholder="Nhập email"
                     />
                   </div>
                 </div>
                 <div class="clearfix"></div>
-                <!-- <div class="function2">
-                  <div class="">
-                    <input
-                      type="checkbox"
-                      name="remember-me"
-                      id="remember-me"
-                      value="3"
-                    />
-                    <label for="remember-me">Lưu mật khẩu</label>
-                  </div>
-                  <a
-                    href="index2818.html?module=members&amp;view=forgot"
-                    class="forgot_pass"
-                  >
-                    <svg
-                      width="15"
-                      height="15"
-                      viewBox="0 0 15 15"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M8.75 12.1875C8.75 12.3633 8.61328 12.5 8.4375 12.5H6.5625C6.38672 12.5 6.25 12.3633 6.25 12.1875V10.3125C6.25 10.1367 6.38672 10 6.5625 10H8.4375C8.61328 10 8.75 10.1367 8.75 10.3125V12.1875ZM11.25 5.625C11.25 7.10938 10.2344 7.67578 9.49219 8.0957C9.0332 8.35938 8.75 8.83789 8.75 9.0625C8.75 9.23828 8.61328 9.375 8.4375 9.375H6.5625C6.38672 9.375 6.25 9.23828 6.25 9.0625V8.71094C6.25 7.76367 7.19727 6.95313 7.89062 6.64063C8.48633 6.36719 8.75 6.11328 8.75 5.60547C8.75 5.17578 8.17383 4.77539 7.54883 4.77539C7.19727 4.77539 6.875 4.89258 6.70898 5.00977C6.52344 5.14648 6.32812 5.32227 5.86914 5.9082C5.81055 5.98633 5.71289 6.02539 5.625 6.02539C5.55664 6.02539 5.48828 6.00586 5.43945 5.9668L4.15039 4.99023C4.02344 4.89258 3.98437 4.7168 4.07227 4.58008C4.91211 3.18359 6.10352 2.5 7.69531 2.5C9.375 2.5 11.25 3.83789 11.25 5.625ZM15 7.5C15 3.35938 11.6406 0 7.5 0C3.35937 0 0 3.35938 0 7.5C0 11.6406 3.35937 15 7.5 15C11.6406 15 15 11.6406 15 7.5Z"
-                        fill="#252525"
-                      ></path>
-                    </svg>
-
-                    Quên mật khẩu?</a
-                  >
-                </div> -->
+        
                 <div  class="btnsubmit">
                   <a-button
                     style="height: 50px;"
                     size="large"
-                    @click="Login"
+                    @click="Register"
                     id="signin-btn"
                   >
-                    Đăng nhập
+                    Đăng ký
                   </a-button>
                 </div>
 
@@ -135,7 +148,67 @@
                 <input type="hidden" name="view" value="signin" />
                 <input type="hidden" name="task" value="do_login" />
                 <input type="hidden" name="rurl" value="index.html" />
-              </form>
+              </form> -->
+              <a-form 
+              class="info"
+              :model="DangKy"
+              @finish="onFinish"
+              @finishFailed="onFinishFailed"
+              ref="formRef"
+              >
+              <a-form-item
+                name="FullName"
+                :rules="[{ required: true, message: 'Họ và tên không được để trống!' }]"
+                >
+                  <label for="" style="font-size: 16px;">Họ và tên</label>
+                  <a-input v-model:value="DangKy.FullName" size="large" placeholder="Nhập họ tên"/>
+                </a-form-item>
+
+                <a-form-item
+                name="TaiKhoan"
+                :rules="[{ required: true, message: 'Tài khoản không được để trống!' }]"
+                >
+                  <label for="" style="font-size: 16px;">Tài Khoản</label>
+                  <a-input v-model:value="DangKy.TaiKhoan" size="large" placeholder="Nhập tài khoản"/>
+                </a-form-item>
+
+                <a-form-item
+                name="MatKhau"
+                :rules="[{ required: true, message: 'Mật khẩu không được để trống!' }]"
+                >
+                  <label for="" style="font-size: 16px;">Mật khẩu</label>
+                  <a-input-password v-model:value="DangKy.MatKhau" size="large" placeholder="Nhập mật khẩu"/>
+                </a-form-item>
+
+                <a-form-item
+                name="NhapLaiMatKhau"
+                :rules="[{ required: true, message: 'Nhập lại mật khẩu không được để trống!' }]"
+                >
+                  <label for="" style="font-size: 16px;">Nhập lại Mật khẩu</label>
+                  <a-input-password v-model:value="DangKy.NhapLaiMatKhau" size="large" placeholder="Nhập lại mật khẩu"/>
+                </a-form-item>
+
+                <a-form-item
+                name="SoDienThoai"
+                :rules="[{ required: true, message: 'Số điện thoại không được để trống!' }]"
+                >
+                  <label for="" style="font-size: 16px;">Nhập số điện thoại</label>
+                  <a-input v-model:value="DangKy.SoDienThoai" size="large" placeholder="Nhập số điện thoại"/>
+                </a-form-item>
+
+                <a-form-item
+                name="Email"
+                 :rules="[{ required: true, message: 'Email không được để trống!' }]"
+                >
+                  <label for="" style="font-size: 16px;">Nhập email</label>
+                  <a-input v-model:value="DangKy.Email" size="large" placeholder="Nhập Email"/>
+                </a-form-item>
+
+                <a-form-item :wrapper-col="{ offset: 10, span: 16 }">
+                  <a-button  size="large" style="background-color: red; color: white;" html-type="submit">  Đăng ký</a-button>
+                </a-form-item>
+              </a-form>
+              
             </div>
           </div>
         </div>
@@ -223,15 +296,15 @@
       </div>
     </div>
   </div>
-  <FooterClient></FooterClient>
+<FooterClient></FooterClient>
 </template>
 
 <script>
 import Header from '@/components/Header';
 import FooterClient from '@/components/FooterClient.vue';
 import APIService from '@/helpers/ApiService';
-import router from '@/router/index';
-import * as jose from 'jose';
+import { Modal } from 'ant-design-vue';
+
 export default {
   components:{
     Header,
@@ -239,75 +312,152 @@ export default {
   },
   data() {
     return {
-      authError: null,
-      TaiKhoan: '',
-      MatKhau: '',
+      DangKy:[
+        {
+          authError: null,
+          TaiKhoan: '',
+          MatKhau: '',
+          NhapLaiMatKhau: '',
+          FullName: '',
+          Email: '',
+          SoDienThoai:''
+        }
+        
+      ],
+      newId:'',
+      
     };
   },
   methods: {
-    async Login() {
-      try {
-        if (!this.TaiKhoan || !this.TaiKhoan) {
-          alert('Vui lòng điền đầy đủ thông tin.');
-          return;
-        }
-
-        let dataLogin = await APIService.post('user/login', {
-          username: this.TaiKhoan,
-          password: this.MatKhau,
-        });
-        
-        if (dataLogin.data != null && dataLogin.data.accessToken) {
-          // localStorage.setItem(
-          //   'userClient',
-          //   JSON.stringify(dataLogin.data.userData)
-          // );
-
-          localStorage.setItem("userClient", dataLogin.data.userData.userId);
-          localStorage.setItem('accessTokenClient', dataLogin.data.accessToken);
-
-          var token = dataLogin.data.accessToken;
-
-          const protectedHeader = jose.decodeJwt(token);
-
-          const Role =
-            protectedHeader[
-              'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
-            ];
-
-          await APIService.get('/AppRole/get/' + Role).then((response) => {
-            console.log('rolecode', response.data.data.roleCode);
-            const roleCode = response.data.data.roleCode;
-            if (roleCode === 'CLIENT') {
-              this.authError = null;
-
-              localStorage.setItem('FullName', dataLogin.data.userData.fullName)
-              localStorage.setItem('UserId', dataLogin.data.userData.userId)
-            
-              router.push('/');
-            } else {
-              alert('Thatas bai.');
-              this.submitted = false;
-              this.authError =
-                'Đăng nhập thất bại. Tài khoản hoặc mật khẩu không đúng. haha';
-            }
+ 
+  async Register(){
+      
+      const info={
+        username : this.DangKy.TaiKhoan,
+        password : this.DangKy.MatKhau,
+        email : this.DangKy.Email,
+        fullName: this.DangKy.FullName,
+        phoneNumber: this.DangKy.SoDienThoai
+      }
+      try{
+        await APIService.post("User/register", info)
+        .then(response =>{
+          this.DangKy.authError = null
+          console.log(response.data.data.id)
+          this.newId = response.data.data.id
+          toast.success("Đăng ký thành viên thành công", {
+            theme: "colored",
+            autoClose: 2000,
           });
-        }
-      } catch (e) {
-        this.submitted = false;
-        if (e.status == 401) {
-          this.authError =
-            'Đăng nhập thất bại. Tài khoản hoặc mật khẩu không đúng.';
-        } else {
-          if (e.data && e.data.Message) {
-            this.authError = e.data.Message;
-          } else {
-            this.authError = 'Đăng nhập thất bại. Vui lòng thử lại sau.';
+        })
+        .catch(e=>{
+          console.log('loidangky', e.response.data.errors)
+          if(e.response.data.errors == 'FullName'){
+            this.DangKy.authError = e.response.data.errors.FullName;
           }
+        })
+      }catch(e){
+          
+        this.submitted = false;
+        this.isLoading = false;
+        if (e.response && e.response.status === 400 && e.response.data.errors) {
+          const { errors } = e.response.data;
+          // Xử lý lỗi cụ thể
+          
+          if (errors.noiBat) {
+            toast.error(errors.noiBat[0], {
+              theme: "colored",
+              autoClose: 2000,
+            });
+          }
+          if (errors.tintuc) {
+            toast.error(errors.tintuc[0], {
+              theme: "colored",
+              autoClose: 2000,
+            });
+          }
+        } else {
+          console.error('Lỗi không xác định:', e);
+          toast.error("Có lỗi xảy ra. Vui lòng thử lại sau.", {
+            theme: "colored",
+            autoClose: 2000,
+          });
         }
       }
     },
+    countDown() {
+      let secondsToGo = 5;
+      const modal = Modal.success({
+        title: 'Tạo tài khoản thành công!',
+        content: `Chuyển sang trang đăng nhập sau ${secondsToGo} giây.`,
+        onOk: () => {
+          this.$router.push('/dang-nhap');
+        }
+      });
+      const interval = setInterval(() => {
+        secondsToGo -= 1;
+        modal.update({
+          content: `Chuyển sang trang đăng nhập chủ sau ${secondsToGo} giây.`,
+        });
+      }, 1000);
+      setTimeout(() => {
+        clearInterval(interval);
+        modal.destroy();
+        this.$router.push('/dang-nhap');
+      }, secondsToGo * 1000);
+    },
+    async onFinish () {
+      this.$refs.formRef.validate().then(async () => {
+        const info={
+          username : this.DangKy.TaiKhoan,
+          password : this.DangKy.MatKhau,
+          email : this.DangKy.Email,
+          fullName: this.DangKy.FullName,
+          phoneNumber: this.DangKy.SoDienThoai
+        }
+        if (this.DangKy.MatKhau != this.DangKy.NhapLaiMatKhau) {
+          this.$message.error("Mật khẩu nhập lại không trùng khớp!");
+          this.DangKy =''
+        } 
+       
+        else{
+          await APIService.post("User/registerForClient", info)
+        .then(response =>{
+          console.log('sadas', response)
+          console.log(response.data.data.id)
+          this.newId = response.data.data.id
+          this.AddRole(this.newId);
+        })
+        .catch(e=>{
+          // if(e.response.data.errors == 'FullName'){
+          //   this.DangKy.authError = e.response.data.errors.FullName;
+          // }
+          this.$message.error(e.response.data.message)
+        })
+        }
+        
+     
+      });
+    },
+    AddRole(id){
+      const data = {
+        userId : id,
+        roleId : 'cba1a1b9-48f4-4704-0526-08dc6ea08003'
+      }
+      APIService.post("AppUserRole/create", data)
+      .then(response =>{
+          console.log(response)
+       
+          
+          this.countDown()
+        })
+        .catch(e=>{
+          console.log('loidangky', e)
+          
+        })
+    }
   },
+  
 };
 </script>
 
@@ -315,7 +465,7 @@ export default {
 #main .form-login {
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.16);
   border-radius: 30px;
-  grid-template-columns: 40% 60%;
+  grid-template-columns: 50% 50%;
   display: grid;
   margin: auto;
 }
@@ -425,5 +575,10 @@ export default {
   border-top-right-radius: 30px;
   border-bottom-right-radius: 30px;
   padding-top: 40px;
+}
+.label_error {
+    color: red;
+    margin-bottom: 10px;
+    text-align: start;
 }
 </style>

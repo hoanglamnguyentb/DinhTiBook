@@ -14,7 +14,7 @@ import PageHeader from "@/components/page-header";
 import { QuillEditor } from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 
-import FileManager from "../../../components/FileManager/FileManager.vue";
+import FileManager from "../../../components/FileManager/File_Manager.vue";
 import APIService from "@/helpers/ApiService";
 
 import { toast } from "vue3-toastify";
@@ -93,17 +93,19 @@ export default {
         placeholder: "Nhập nội dung bài viết...",
         theme: "snow",
       },
-      post: {
-        title: "",
-        chuyenMuc: "",
-        content: "",
-        trangThai: "",    
-        description: "",
-        isNoiBat: 0,
-        hinhAnh: "",
-        danhMuc: "",
-        fileDinhKem:"",
-      },
+      // post: {
+      //   tieuDe: "",
+      //   danhMuc: "",
+      //   content: "",
+      //   trangThai: "",    
+      //   description: "",
+      //   isNoiBat: 0,
+      //   hinhAnh: "",
+      //   danhMuc: "",
+      //   fileDinhKem:"",
+
+      // },
+      post:{},
       newPostId: '',
       chuyenmuc: [],
       lstChuyenMuc: [],
@@ -117,6 +119,13 @@ export default {
       options: [
         { text: "Không", value: 0 },
         { text: "Có", value: 1 },
+      ],
+      lstType:[
+        {text: "Tin tức", value: "TINTUC"},
+        {text: "Nhóm độ tuổi", value: "DOTUOI"},
+        {text: "Làm cha mẹ", value: "LAMCHAME"},
+        {text: "Tiện ích", value: "TIENICH"},
+        {text: "Review sách", value: "Review sách"},
       ],
 
       rules:{
@@ -144,58 +153,46 @@ export default {
       ele.target.parentElement.parentElement.parentElement.remove();
     },
     
-    async onSubmit() {
-  try {
-    // this.post.henGioDang.setHours(0,0,0,0);
-    console.log('post', this.post)
-    await APIService.post("Tintuc/Create", this.post)
+//      onSubmit() {
+    
+//       // this.$refs.myQuillEditor.quill.setText('');
+//       this.$refs.myQuillEditor.setText('');
+//       // this.$router.go(0);
+
+//     }
+
+// ,
+async onSubmit() {
+  this.$refs.formRef.validate().then(async () => {
+    await APIService.post("/Tintuc/Create", this.post)
     .then(response => {
       this.newPostId = response.data.data.id;
- 
-     // Đặt lại tất cả thuộc tính của this.post trừ isNoiBat
+      
+    // Đặt lại tất cả thuộc tính của this.post trừ isNoiBat
     for (const key in this.post) {
         if (key !== 'isNoiBat') {
             this.post[key] = '';
         }
     }
-    this.post.noiDung = '';
+
+      this.$refs.myQuillEditor.setText('');
       this.post.isNoiBat = false;
-    })
-    toast.success("Thêm bài viết thành công", {
+
+      toast.success("Thêm bài viết thành công", {
       theme: "colored",
       autoClose: 2000,
     });
-  } catch (e) {
-    this.submitted = false;
-    this.isLoading = false;
-    if (e.response && e.response.status === 400 && e.response.data.errors) {
-      const { errors } = e.response.data;
-      // Xử lý lỗi cụ thể
-      if (errors.noiBat) {
-        toast.error(errors.noiBat[0], {
-          theme: "colored",
-          autoClose: 2000,
-        });
-      }
-      if (errors.tintuc) {
-        toast.error(errors.tintuc[0], {
-          theme: "colored",
-          autoClose: 2000,
-        });
-      }
-    } else {
-      console.error('Lỗi không xác định:', e);
-      toast.error("Có lỗi xảy ra. Vui lòng thử lại sau.", {
-        theme: "colored",
-        autoClose: 2000,
-      });
-    }
+    })
+    .catch(e =>{
+      console.log(e);
+    })
+   
     
-  }
- 
-}
-
-,
+  })
+  .catch(error =>{
+        console.log('error', error);
+      })
+},
 
     handleCheckboxChange() {
       // Kiểm tra nếu checkbox được chọn
@@ -212,7 +209,7 @@ export default {
       for(var i=0; i<this.chuyenmuc.length; i++){
             var chuyenmucItem ={
                 value: this.chuyenmuc[i].maDanhMuc,
-                label: this.chuyenmuc[i].tenDanhMuc
+                text: this.chuyenmuc[i].tenDanhMuc
             };
             this.lstChuyenMuc.push(chuyenmucItem);
         }
@@ -241,7 +238,7 @@ export default {
   validations() {
     return {
       post: {
-        title: {
+        tieuDe: {
           required: helpers.withMessage(
             "Tiêu đề bài viết không được để trống",
             required
@@ -290,6 +287,9 @@ export default {
 <template>
   <PageHeader :title="title" :items="items" />
   <a-form
+  name="basic"
+  ref="formRef" 
+    :model="post"
   >
     <a-row :gutter="20">
       <a-col :span="24">
@@ -298,24 +298,28 @@ export default {
             <h5 class="custom-card-title mb-0">Thông tin bài viết</h5>
           </template>
           <div>
-            
-
-            <a-form-item>
-              <div>
-              <label class="form-label" for="title">Chuyên mục tin tức</label>
-              <Multiselect class="form-control"
-              :class="{
-                  'is-invalid': submitted && v$.post.chuyenMuc.$error,
-                }"
-              v-model="post.danhMuc" value="0" :close-on-select="true" :searchable="true"
-                :create-option="true" :options="lstChuyenMuc" />
-             
+            <div>
+              <a-form-item 
+                  :rules="[{ required: true, message: 'Vui lòng chọn loại bài viết!' }]"
+                  name="type"
+                  >
+                  <label for="tieuDe">Chọn loại:</label>
+                    <a-select 
+                      v-model:value="post.type" 
+                      placeholder="Chọn loại"
+                      :options="lstType"
+                      :field-names="{ label: 'text', value: 'value'}"
+                      size="large"
+                      >
+                      
+                    </a-select>
+                  </a-form-item>
             </div>
-            </a-form-item>
+          
             
-            <a-form-item>
-              <label for="TieuDe">Tiêu đề:</label>
-              <a-input name="TieuDe" size="large" id="TieuDe" v-model:value="post.tieuDe" />
+            <a-form-item :rules="[{ required: true, message: 'Vui lòng chọn Tiêu đề!' }]" name="tieuDe">
+              <label for="tieuDe">Tiêu đề:</label>
+              <a-input name="tieuDe" size="large" id="tieuDe" v-model:value="post.tieuDe" />
             </a-form-item>
             <a-form-item label="Nổi bật">
             
@@ -329,6 +333,7 @@ export default {
                 v-model:content="post.noiDung"
                 contentType="html"
                 @change="quill"
+                ref="myQuillEditor"
               />
             </a-form-item>
             <a-form-item>

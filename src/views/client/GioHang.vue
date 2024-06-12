@@ -1,5 +1,7 @@
 <template>
-  <div style="margin-top: 50px;" class="container">
+  <Header></Header>
+  <div style="background-color: white; padding-bottom: 200px;">
+    <div style="padding-top: 50px;" class="container">
     <a-row>
       <a-col :span="16">
         <div class="cart-box">
@@ -45,14 +47,14 @@
                 <td>
                   <div class="count-number">
                     <div class="toggle-quantity">
-                            <button @click="less(item)" id="decrement-5528" class="decrement ml-1" data-id="5528">-
+                            <button @click="addOrRemove(-1, item.id)" id="decrement-5528" class="decrement ml-1" data-id="5528">-
                             </button>
                         </div>
                         <input id="quantity-5528" class="quantity" type="text" v-model="item.quantity" >
                         <!--                                    <input id="total_temp" type="text" value="-->
                         <!--" disabled/>-->
                         <div class="toggle-quantity">
-                            <button  @click="add(item)" id="increment-5528" class="increment mr-1" data-id="5528">+
+                            <button  @click="addOrRemove(1, item.id)" id="increment-5528" class="increment mr-1" data-id="5528">+
                             </button>
                         </div>
                     </div>
@@ -79,6 +81,8 @@
       </a-col>
     </a-row>
   </div>
+  </div>
+  <FooterClient></FooterClient>
 </template>
 
 <script>
@@ -86,41 +90,62 @@
 import Swal from "sweetalert2";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
+import Header from '@/components/Header';
+import FooterClient from '@/components/FooterClient.vue';
 
 export default {
+  components:{
+    Header,
+    FooterClient
+  },
   data(){
     return{
       URL: "http://localhost:44301/",
       qty: 1,
+      SanPham:{}
     }
+  },
+  mounted(){
+    this.SanPham = this.$store.state.cart;
+    console.log("SanPham initially: ", this.SanPham);
   },
   methods:{
     XoaSP(item){
       this.$store.commit('addRemoveCart',{products:item,toAdd:false})
     },
-    async addOrRemove(number){
+    addOrRemove(number, itemId){
+      const item = this.SanPham.find(o => o.id === itemId);
+     
+      console.log('itemss', item)
+      if(number == 1){
+                if(item.quantity < item.soLuongTon){
+                this.qty = item.quantity;
+                const updatedItem = { ...item, quantity: item.quantity + 1 };      
+                this.$store.commit('updateCart',{products:updatedItem})
+                    toast.success('Cập nhật thành công', {
+                        autoClose: 1000,
+                    });
+                }else{
+                    toast.warning('Không đủ số lượng', {
+                        autoClose: 3000,
+                    });  
+                }
+            }
+            if(number == -1){
+                if(item.quantity > 1){
+                    const updatedItem = { ...item, quantity: item.quantity - 1 };      
+                    this.$store.commit('updateCart',{products:updatedItem})
+                    toast.success('Cập nhật thành công', {
+                            autoClose: 1000,
+                    });
+                }else{
+                    toast.warning('Không giảm được nữa', {
+                        autoClose: 3000,
+                    });  
+                }
+            }
     
-      // if(number ==1){ //add
-      //   if(this.qty < 10){
-      //     this.qty++
-      //       this.products.qty = this.qty
-      //       await this.$store.commit('updateCart',{products:this.products})
-      //       toast.success('cart updated', {autoClose:500})          
-      //   }else{
-      //     toast.warning('You reached the limit' ,{autoClose:500})
-      //   }
-      // }
-      // if(number == -1){ //remove
-      //   if(this.qty > 1){
-      //     this.qty--
-      //     this.products.qty = this.qty
-      //     await this.$store.commit('updateCart',{products:this.products})
-      //     toast.success('cart updated',{autoClose:500})
-      //     toast.autoClose=500
-      //   }else{
-      //     toast.warning('You reached the limit',{autoClose:500})
-      //   }
-      // }    
+         
     },
     ThanhToan(){
       if(localStorage.getItem('userClient') == null){
@@ -146,14 +171,7 @@ export default {
       }
       
     },
-    less(item){
-      item.quantity --;
-      this.$store.commit('CapNhatCard', { products: item });
-    },
-    add(item){
-      item.quantity ++;
-      this.$store.commit('CapNhatCard', { products: item });
-    }
+    
   }
 }
 </script>

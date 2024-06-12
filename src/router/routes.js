@@ -51,7 +51,7 @@ export default [
 
   //Client
   {
-    path: '/tin-tuc/:id',
+    path: '/tin-tuc/chi-tiet/:id',
     name: 'ChiTietTinTucClient',
     meta: {
       title: 'Đinh Tị Books',
@@ -60,7 +60,25 @@ export default [
     component: () => import('@/views/client/ChiTietTinTuc'),
   },
   {
-    path: '/tin-tuc',
+    path: '/don-hang/:id',
+    name: 'ChiTietDonHangClient',
+    meta: {
+      title: 'Đinh Tị Books',
+      authRequired: false,
+    },
+    component: () => import('@/views/client/ChiTietDonHangClient'),
+  },
+  {
+    path: '/don-hang',
+    name: 'TrangThaiDonHang',
+    meta: {
+      title: 'Đinh Tị Books',
+      authRequired: false,
+    },
+    component: () => import('@/views/client/TrangThaiDonHang'),
+  },
+  {
+    path: '/tin-tuc/:type',
     name: 'TinTucClient',
     meta: {
       title: 'Đinh Tị Books',
@@ -95,6 +113,24 @@ export default [
     },
     component: () => import('@/views/client/TrangChu/DanhMucSanPham'),
   },
+   {
+    path: '/sach-noi-bat',
+    name: 'SanPhamNoiBat',
+    meta: {
+      title: 'Đinh Tị Books',
+      authRequired: false,
+    },
+    component: () => import('@/views/client/TrangChu/ChonSachNoiBat'),
+  },
+  {
+    path: '/sach-khuyen-doc',
+    name: 'SanPhamKhuyenDoc',
+    meta: {
+      title: 'Đinh Tị Books',
+      authRequired: false,
+    },
+    component: () => import('@/views/client/TrangChu/ChonSachKhuyenDoc'),
+  },
   {
     path: '/tim-kiem/:filter?',
     name: 'TimKiem',
@@ -124,6 +160,16 @@ export default [
       authRequired: false,
     },
     component: () => import('@/views/client/DangNhap'),
+  },
+  //Dang ky
+  {
+    path: '/dang-ky',
+    name: 'DangKy',
+    meta: {
+      title: 'Đăng ký',
+      authRequired: false,
+    },
+    component: () => import('@/views/client/DangKy'),
   },
 
   //giỏ hàng
@@ -163,6 +209,15 @@ export default [
       authRequired: false, // Thêm thuộc tính authRequired nếu cần thiết
     },
     component: () => import('../views/client/ThanhToan'),
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    meta: {
+      title: 'Thông tin',
+      authRequired: false, // Thêm thuộc tính authRequired nếu cần thiết
+    },
+    component: () => import('../views/client/account/profileClient'),
   },
 
   //Admin
@@ -254,6 +309,33 @@ export default [
           authRequired: true,
         },
         component: () => import('@/views/dashboard/QL_VanBan/index'),
+      },
+      {
+        path: '/dashboard/slide-banner',
+        name: 'QL_Slide_Banner',
+        meta: {
+          title: 'Quản lí slide',
+          authRequired: true,
+        },
+        component: () => import('@/views/dashboard/QL_Slide/SlideBanner/SlideBanner'),
+      },
+      {
+        path: '/dashboard/slide-tacgia',
+        name: 'QL_Slide_TacGia',
+        meta: {
+          title: 'Quản lí slide tác giả',
+          authRequired: true,
+        },
+        component: () => import('@/views/dashboard/QL_Slide/SlideTacGia/SlideTacGia'),
+      },
+      {
+        path: '/dashboard/slide-khachhang',
+        name: 'QL_Slide_KhachHang',
+        meta: {
+          title: 'Quản lí slide khách hàng',
+          authRequired: true,
+        },
+        component: () => import('@/views/dashboard/QL_Slide/SlideKhachHang/SlideKhachHang'),
       },
       {
         path: '/dashboard/van-ban/Create',
@@ -433,7 +515,7 @@ export default [
         component: () => import('../views/dashboard/account/profile'),
       },
       {
-        path: '/dashboard/QL_ChuyenMucTinTuc/ChuyenMucTinTuc',
+        path: '/dashboard/chuyen-muc-tin-tuc',
         name: 'QL_ChuyenMucTinTuc',
         meta: {
           title: 'Quản lý chuyên mục tin tức',
@@ -443,7 +525,7 @@ export default [
           import('@/views/dashboard/QL_ChuyenMucTinTuc/ChuyenMucTinTuc'),
       },
       {
-        path: '/dashboard/QL_TinTuc/Create',
+        path: '/dashboard/tin-tuc/Create',
         name: 'QL_Create',
         meta: {
           title: 'Quản lý chuyên mục tin tức',
@@ -462,7 +544,7 @@ export default [
         component: () => import('@/views/dashboard/QL_HoGiaDinh/HoGiaDinh.vue'),
       },
       {
-        path: '/dashboard/QL_NhaXuatBan',
+        path: '/dashboard/nha-xuat-ban',
         name: 'QL_NXB',
         meta: {
           title: 'Quản lý nhà xuất bản',
@@ -490,7 +572,7 @@ export default [
         component: () => import('@/views/dashboard/QL_SanPham/EditSanPham'),
       },
       {
-        path: '/dashboard/QL_SanPham',
+        path: '/dashboard/san-pham',
         name: 'QL_SanPham',
         meta: {
           title: 'Quản lý sản phẩm',

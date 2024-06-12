@@ -66,7 +66,7 @@
                   <a-select
                     v-model:value="sanpham.idDanhMuc"
                     show-search
-                    placeholder="Chọn danh mucj"
+                    placeholder="Chọn danh mục"
                     style="width: 100%"
                     :options="lstDanhMuc"
                     :filter-option="filterOption"
@@ -295,7 +295,7 @@ export default {
     async getSanPhamById(){
     var paramId = this.$route.params.id;
     console.log('id', paramId)
-    APIService.get("SanPham/"+ paramId)
+    APIService.get("SanPham/GetById/"+ paramId)
     .then(response => {
       console.log(response)
       this.sanpham = response.data.objInfo;
